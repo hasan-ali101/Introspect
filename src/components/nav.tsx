@@ -22,8 +22,8 @@ export default function Nav() {
           </Sheet>
         </div>
       </div>
-      <div className="hidden h-10 w-1/2 items-center justify-between border-b-2 border-r border-black pl-6 pr-8 text-xs  tracking-wider underline dark:border-white md:flex lg:px-12 lg:text-sm">
-        <p className="hover:cursor-pointer">Writer's Studio</p>
+      <div className="hidden h-10 w-1/2 items-center justify-between border-b-2 border-r border-black pl-6 pr-8 text-xs tracking-wider underline dark:border-white md:flex lg:px-12 lg:text-sm">
+        <p className="hover:cursor-pointer">Writer&apos;s Studio</p>
         <p className="hover:cursor-pointer">Zen Garden</p>
         <p className="hover:cursor-pointer">Reading room</p>
       </div>
