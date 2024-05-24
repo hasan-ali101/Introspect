@@ -23,7 +23,7 @@ const Book = ({ title, color, label, text, notebook }: IBook) => {
         <div
           className={cn(
             color,
-            "absolute bottom-[0px] left-[0px] right-[5px] top-[4px] flex justify-center rounded-l-sm border-b border-r border-t border-slate-600  p-1 lg:right-[7px] lg:top-[6px] lg:p-2",
+            "absolute bottom-[0px] left-[0px] right-[5px] top-[4px] flex justify-center rounded-l-sm border-r border-t border-slate-400 p-1 shadow-md lg:right-[7px] lg:top-[6px] lg:p-2",
           )}
         >
           <div

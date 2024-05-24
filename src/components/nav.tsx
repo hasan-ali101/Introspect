@@ -71,10 +71,12 @@ export default function Nav() {
                   </SheetClose>
                 </div>
                 <SignedOut>
-                  <SignInButton />
+                  <div className="flex items-center justify-start gap-4 px-6 py-8 font-semibold underline">
+                    <SignInButton />
+                  </div>
                 </SignedOut>
                 <SignedIn>
-                  <div className="flex items-center justify-center gap-4 py-8 font-semibold underline">
+                  <div className="flex items-center justify-start gap-4 px-6 py-8 font-semibold underline">
                     <UserButton />
                     <SignOutButton />
                   </div>
