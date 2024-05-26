@@ -16,6 +16,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 const dummyBooks = [
   {
+    id: "1",
     title: "My 2024 meditation journal",
     color: "bg-red-300",
     label: false,
@@ -23,6 +24,7 @@ const dummyBooks = [
     notebook: false,
   },
   {
+    id: "2",
     title: "Coding Notes - Next.js",
     color: "bg-green-300",
     label: false,
@@ -30,6 +32,7 @@ const dummyBooks = [
     notebook: true,
   },
   {
+    id: "3",
     title: "the bongo book",
     color: "bg-blue-300",
     label: true,
@@ -50,6 +53,7 @@ export default function Write() {
           <CarouselContent>
             {dummyBooks.map((book) => (
               <CarouselItem
+                key={book.id}
                 className={cn(
                   isEditing ? "w-24" : "w-20",
                   "flex justify-center py-4 sm:w-32 md:w-40",
