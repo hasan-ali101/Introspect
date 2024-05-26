@@ -18,7 +18,7 @@ import Link from "next/link";
 export default function Nav() {
   return (
     <>
-      <div className="flex h-16 w-full items-center justify-between border-b-2 border-black px-2 py-8 dark:border-white md:p-10">
+      <div className="flex h-16 w-full items-center justify-between border-b-2 border-black px-2 py-8 drop-shadow-2xl dark:border-white md:p-10">
         <Link
           href="/"
           className="flex items-center gap-2 text-lg md:gap-7 md:text-xl "
@@ -50,7 +50,7 @@ export default function Nav() {
                       href="/write"
                       className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
                     >
-                      <p>Writer&apos;s Studio</p>
+                      <p>Write</p>
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
@@ -58,7 +58,7 @@ export default function Nav() {
                       href="/meditate"
                       className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
                     >
-                      <p> Zen Garden</p>
+                      <p>Meditate</p>
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
@@ -66,7 +66,15 @@ export default function Nav() {
                       href="/read"
                       className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
                     >
-                      <p>Reading room</p>
+                      <p>Read</p>
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      href="/read"
+                      className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                    >
+                      <p>Discuss</p>
                     </Link>
                   </SheetClose>
                 </div>
@@ -86,15 +94,18 @@ export default function Nav() {
           </Sheet>
         </div>
       </div>
-      <div className="hidden h-10 w-1/2 items-center justify-between border-b-2 border-r border-black pl-6 pr-8 text-sm font-light tracking-wider underline dark:border-white md:flex lg:px-12 lg:text-sm">
+      <div className="hidden h-10 w-1/2 items-center justify-between border-b-2 border-r border-black pl-6 pr-8 text-sm font-light tracking-wider underline drop-shadow-2xl dark:border-white md:flex lg:px-12 lg:text-sm">
         <Link href="/write" className="hover:cursor-pointer">
-          Writer&apos;s Studio
+          Write
         </Link>
         <Link href="/meditate" className="hover:cursor-pointer">
-          Zen Garden
+          Meditate
         </Link>
         <Link href="/read" className="hover:cursor-pointer">
-          Reading room
+          Read
+        </Link>
+        <Link href="/read" className="hover:cursor-pointer">
+          Discuss
         </Link>
       </div>
     </>

@@ -1,18 +1,31 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import type { IBook } from "@/types/book";
 
-interface IBook {
-  title: string;
-  color: string;
-  label: boolean;
-  text: string;
-  notebook: boolean;
+interface BookProps extends IBook {
+  editMode: boolean;
 }
 
-const Book = ({ title, color, label, text, notebook }: IBook) => {
+const Book = ({
+  title,
+  color,
+  label,
+  text,
+  notebook,
+  editMode,
+  id,
+  coverImage,
+}: BookProps) => {
+  console.log(coverImage);
+
   return (
     <div>
-      <div className="relative w-20 cursor-pointer transition-all hover:scale-105 lg:w-28">
+      <div
+        className={cn(
+          !editMode && "hover:scale-105",
+          "relative w-20 cursor-pointer transition-all lg:w-28",
+        )}
+      >
         <Image
           className="h-full w-full"
           src="/book3.png"
@@ -23,20 +36,30 @@ const Book = ({ title, color, label, text, notebook }: IBook) => {
         <div
           className={cn(
             color,
-            "absolute bottom-[0px] left-[0px] right-[5px] top-[4px] flex justify-center rounded-l-sm border-r border-t border-slate-400 p-1 shadow-md lg:right-[7px] lg:top-[6px] lg:p-2",
+            "absolute bottom-[0.3px] left-[0px] right-[4.5px] top-[4.5px] flex justify-center rounded-l-sm rounded-r-sm border border-gray-500 p-1 shadow-md lg:left-[1px] lg:right-[7px] lg:top-[6.5px] lg:p-2",
           )}
         >
+          {coverImage && (
+            <Image
+              src={coverImage}
+              alt="cover"
+              width={800}
+              height={500}
+              className="absolute left-0 top-0 h-full w-full rounded-md object-fill"
+            />
+          )}
+
           <div
             className={cn(
               notebook && "ml-[5px] lg:ml-1",
               label ? "bg-white" : "bg-transparent",
-              "flex h-fit min-h-6 w-full items-center justify-center rounded-md px-[1px] py-1 text-center opacity-95",
+              "flex h-fit min-h-6 w-full items-center justify-center rounded-md px-[1px] py-1 text-center  opacity-95",
             )}
           >
             <p
               className={cn(
                 text,
-                "line-clamp-3 max-h-12 text-[7px] lg:line-clamp-4 lg:max-h-14 lg:text-[10px]",
+                "line-clamp-3 max-h-12 text-[7px] lg:line-clamp-4 lg:max-h-16 lg:text-[10px] ",
               )}
             >
               {title}
