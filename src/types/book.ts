@@ -1,11 +1,9 @@
 export interface IBook {
-  id: string;
+  id: number;
   title: string;
   color: string;
   label: boolean;
-  text: string;
   notebook: boolean;
   coverImage?: string;
   uploadedImage?: string;
-  imageFit?: "object-fill" | "object-cover";
 }

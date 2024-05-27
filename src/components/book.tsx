@@ -10,7 +10,6 @@ const Book = ({
   title,
   color,
   label,
-  text,
   notebook,
   editMode,
   id,
@@ -54,12 +53,7 @@ const Book = ({
               "flex h-fit min-h-6 w-full items-center justify-center rounded-md px-[1px] py-1 text-center  opacity-95",
             )}
           >
-            <p
-              className={cn(
-                text,
-                "line-clamp-3 max-h-12 text-[7px] sm:line-clamp-4 sm:max-h-16 sm:text-[10px] ",
-              )}
-            >
+            <p className="line-clamp-3 max-h-12 text-[7px] font-semibold text-black sm:line-clamp-4 sm:max-h-16 sm:text-[10px]">
               {title}
             </p>
           </div>

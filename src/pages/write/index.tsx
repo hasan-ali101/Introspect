@@ -25,47 +25,39 @@ const inter = Inter({ subsets: ["latin"] });
 
 const dummyBooks: IBook[] = [
   {
-    id: "1",
+    id: 1,
     title: "My 2024 meditation journal",
     color: "bg-red-300",
     label: false,
-    text: "text-black",
     notebook: false,
-    coverImage: "/stars.jpeg",
-    imageFit: "object-fill",
+    coverImage: "/flowers.webp",
     uploadedImage: "",
   },
   {
-    id: "2",
+    id: 2,
     title: "Coding Notes - Next.js",
-    color: "bg-green-300",
+    color: "bg-purple-300",
     label: false,
-    text: "text-black",
     notebook: true,
     coverImage: "/venus.jpeg",
-    imageFit: "object-cover",
     uploadedImage: "",
   },
   {
-    id: "3",
+    id: 3,
     title: "the bongo book",
     color: "bg-blue-300",
     label: true,
-    text: "text-black",
     notebook: false,
     coverImage: "/wave.jpeg",
-    imageFit: "object-fill",
     uploadedImage: "",
   },
   {
-    id: "4",
+    id: 4,
     title: "the 4th book",
     color: "bg-blue-300",
     label: true,
-    text: "text-black",
     notebook: false,
-    coverImage: "/skeleton.jpeg",
-    imageFit: "object-fill",
+    coverImage: "/spaces.jpeg",
     uploadedImage: "",
   },
 ];
@@ -73,16 +65,16 @@ const dummyBooks: IBook[] = [
 const defaultColors = [
   "bg-red-300",
   "bg-blue-300",
-  "bg-green-300",
-  "bg-pink-300",
   "bg-purple-300",
+  "bg-emerald-300",
+  "bg-orange-300",
 ];
 
 const defaultImages = [
   "/wave.jpeg",
-  "/stars.jpeg",
+  "/spaces.jpeg",
   "/venus.jpeg",
-  "/skeleton.jpeg",
+  "/flowers.webp",
 ];
 
 export default function Write() {
@@ -97,7 +89,7 @@ export default function Write() {
 
   const { toast } = useToast();
 
-  const colorSelectHandler = (id: string, color: string) => {
+  const colorSelectHandler = (id: number, color: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) => (book.id === id ? { ...book, color } : book)),
     );
@@ -121,7 +113,7 @@ export default function Write() {
     );
   };
 
-  const imageSelectHandler = (id: string, image: string) => {
+  const imageSelectHandler = (id: number, image: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
         book.id === id ? { ...book, coverImage: image } : book,
@@ -133,7 +125,7 @@ export default function Write() {
     setBooks((prevBooks) => [
       ...prevBooks,
       {
-        id: `${prevBooks.length + 1}`, // Need to gen a unique id
+        id: prevBooks.length + 1, // Need to gen a unique id
         title: "New Book Title",
         color: "bg-red-300",
         label: true,
@@ -211,7 +203,6 @@ export default function Write() {
                       title={book.title}
                       color={book.color}
                       label={book.label}
-                      text={book.text}
                       notebook={book.notebook}
                       editMode={isEditing && selectedBook?.id === book.id}
                       coverImage={book.coverImage}
@@ -240,7 +231,7 @@ export default function Write() {
                       isEditing
                         ? "h-full md:w-80"
                         : "h-0 border-transparent md:w-0",
-                      "relative w-full scroll-my-96 overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
+                      "relative w-full overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
                     )}
                   >
                     <CircleX
@@ -254,7 +245,7 @@ export default function Write() {
                       )}
                     />
                     {isEditing && (
-                      <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 py-8">
+                      <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
                         <RadioGroup
                           onValueChange={(e) => notebookSelectHandler(e)}
                           className="grid-flow-col"
@@ -306,7 +297,7 @@ export default function Write() {
                           onValueChange={(e) => labelSelectHandler(e)}
                           className="grid-flow-col"
                           defaultValue={
-                            selectedBook.label ? "label" : "no label"
+                            selectedBook?.label ? "label" : "no label"
                           }
                         >
                           <div className="flex items-center space-x-2">
