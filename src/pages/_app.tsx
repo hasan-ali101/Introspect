@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import Nav from "@/components/nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -10,6 +11,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <ThemeProvider attribute="class">
         <Nav />
         <Component {...pageProps} />
+        <Toaster />
       </ThemeProvider>
     </ClerkProvider>
   );

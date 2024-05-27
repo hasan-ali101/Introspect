@@ -18,6 +18,7 @@ import type { IBook } from "@/types/book";
 import Image from "next/image";
 import { UploadButton } from "@/lib/utils";
 import { Pencil } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -89,6 +90,8 @@ export default function Write() {
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
+
+  const { toast } = useToast();
 
   const onSelectColor = (id: string, color: string) => {
     setBooks((prevBooks) =>
@@ -341,11 +344,15 @@ export default function Write() {
                                       : prevBook,
                                   );
                                 });
-                                alert("Upload Completed");
+                                toast({
+                                  description: "Image Upload Successful",
+                                });
                               }}
                               onUploadError={(error: Error) => {
                                 // Do something with the error.
-                                alert(`ERROR! ${error.message}`);
+                                toast({
+                                  description: "Image Upload Error",
+                                });
                               }}
                             />
                             <div className="flex flex-col items-center justify-center gap-2">
