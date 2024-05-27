@@ -40,12 +40,10 @@ const Book = ({
           )}
         >
           {coverImage && (
-            <Image
+            <img
               src={coverImage}
               alt="cover"
-              width={800}
-              height={500}
-              className="absolute left-0 top-0 h-full w-full rounded-md object-fill"
+              className="absolute left-0 top-0 h-full w-full object-cover"
             />
           )}
 

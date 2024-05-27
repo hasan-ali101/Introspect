@@ -6,5 +6,6 @@ export interface IBook {
   text: string;
   notebook: boolean;
   coverImage?: string;
+  uploadedImage?: string;
   imageFit?: "object-fill" | "object-cover";
 }

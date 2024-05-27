@@ -11,9 +11,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { CircleX } from "lucide-react";
+import { CircleOff } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { IBook } from "@/types/book";
+import Image from "next/image";
+import { UploadButton } from "@/lib/utils";
+import { Pencil } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +29,9 @@ const dummyBooks: IBook[] = [
     label: false,
     text: "text-black",
     notebook: false,
-    coverImage: undefined,
+    coverImage: "/stars.jpeg",
     imageFit: "object-fill",
+    uploadedImage: "",
   },
   {
     id: "2",
@@ -37,6 +42,7 @@ const dummyBooks: IBook[] = [
     notebook: true,
     coverImage: "/venus.jpeg",
     imageFit: "object-cover",
+    uploadedImage: "",
   },
   {
     id: "3",
@@ -45,8 +51,20 @@ const dummyBooks: IBook[] = [
     label: true,
     text: "text-black",
     notebook: false,
-    coverImage: undefined,
+    coverImage: "/wave.jpeg",
     imageFit: "object-fill",
+    uploadedImage: "",
+  },
+  {
+    id: "4",
+    title: "the 4th book",
+    color: "bg-blue-300",
+    label: true,
+    text: "text-black",
+    notebook: false,
+    coverImage: "/flowers.webp",
+    imageFit: "object-fill",
+    uploadedImage: "",
   },
 ];
 
@@ -58,12 +76,20 @@ const defaultColors = [
   "bg-purple-300",
 ];
 
+const defaultImages = [
+  "/wave.jpeg",
+  "/stars.jpeg",
+  "/venus.jpeg",
+  "/flowers.webp",
+];
+
 export default function Write() {
   const [isEditing, setIsEditing] = useState(false);
   const [books, setBooks] = useState(dummyBooks);
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
+  // const [uploadedImage, setUploadedImage] = useState<string>("");
 
   const onSelectColor = (id: string, color: string) => {
     setBooks((prevBooks) =>
@@ -89,6 +115,14 @@ export default function Write() {
     );
   };
 
+  const onSelectImage = (id: string, image: string) => {
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === id ? { ...book, coverImage: image } : book,
+      ),
+    );
+  };
+
   return (
     <main
       className={`flex min-h-screen flex-col items-center p-10 ${inter.className}`}
@@ -104,11 +138,16 @@ export default function Write() {
                   "flex justify-center py-4 sm:w-32 md:w-40",
                 )}
               >
-                <div className="flex flex-col gap-10 md:flex-row">
+                <div
+                  className={cn(
+                    isEditing && "gap-10",
+                    "flex flex-col items-center justify-center md:flex-row",
+                  )}
+                >
                   <div
                     className={cn(
                       !isEditing && "py-10 md:min-w-80",
-                      "mx-4 flex flex-col items-center gap-6 rounded-3xl border px-4 py-8 shadow-sm md:mx-0",
+                      " mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-8 shadow-sm md:mx-0",
                     )}
                   >
                     {!isEditing && (
@@ -117,20 +156,23 @@ export default function Write() {
                       </p>
                     )}
                     {isEditing && selectedBook?.id === book.id && (
-                      <input
-                        type="text"
-                        className="text-md mx-4 w-full border-b-2 border-gray-300 px-4 outline-slate-100	 dark:border-gray-700"
-                        value={book.title}
-                        onChange={(e) =>
-                          setBooks((prevBooks) =>
-                            prevBooks.map((prevBook) =>
-                              prevBook.id === book.id
-                                ? { ...prevBook, title: e.target.value }
-                                : prevBook,
-                            ),
-                          )
-                        }
-                      />
+                      <div className="relative mx-4">
+                        <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
+                        <input
+                          type="text"
+                          className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100 dark:border-gray-700"
+                          value={book.title}
+                          onChange={(e) =>
+                            setBooks((prevBooks) =>
+                              prevBooks.map((prevBook) =>
+                                prevBook.id === book.id
+                                  ? { ...prevBook, title: e.target.value }
+                                  : prevBook,
+                              ),
+                            )
+                          }
+                        />
+                      </div>
                     )}
                     <Book
                       id={book.id}
@@ -164,9 +206,9 @@ export default function Write() {
                     id="editor"
                     className={cn(
                       isEditing && selectedBook?.id === book.id
-                        ? "h-64 md:w-64"
+                        ? "h-full md:w-80"
                         : "h-0 border-transparent md:w-0",
-                      "relative w-64 scroll-my-96 overflow-hidden rounded-xl border-2 transition-all duration-500 ease-out md:h-full",
+                      "relative w-full scroll-my-96 overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
                     )}
                   >
                     <CircleX
@@ -180,7 +222,7 @@ export default function Write() {
                       )}
                     />
                     {isEditing && selectedBook?.id === book.id && (
-                      <div className="flex w-full flex-col gap-4 px-4 pt-8">
+                      <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 py-8">
                         <RadioGroup
                           onValueChange={(e) => onSelectNotebook(e)}
                           className="grid-flow-col"
@@ -264,6 +306,80 @@ export default function Write() {
                             </Label>
                           </div>
                         </RadioGroup>
+                        <div className="flex w-full justify-between">
+                          <div
+                            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border"
+                            onClick={() => {
+                              setBooks((prevBooks) =>
+                                prevBooks.map((prevBook) =>
+                                  prevBook.id === book.id
+                                    ? { ...prevBook, coverImage: "" }
+                                    : prevBook,
+                                ),
+                              );
+                            }}
+                          >
+                            <CircleOff className=" h-4 w-4" />
+                          </div>
+                          {defaultImages.map((image) => (
+                            <div
+                              key={image}
+                              className={cn(
+                                book.coverImage === image && "bg-slate-300",
+                                "h-8 w-8 cursor-pointer rounded-md border p-[1px] hover:scale-105",
+                              )}
+                              onClick={() => onSelectImage(book.id, image)}
+                            >
+                              <Image
+                                className="h-full w-full rounded-md object-cover"
+                                src={image}
+                                width={100}
+                                height={100}
+                                alt={image}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex w-full items-start justify-between">
+                          <UploadButton
+                            className="ut-allowed-content:text-[8px] ut-button:bg-emerald-500 ut-button:text-sm ut-button:p-4"
+                            endpoint="imageUploader"
+                            onClientUploadComplete={(res) => {
+                              // Do something with the response
+                              console.log("Files: ", res);
+                              setBooks((prevBooks) => {
+                                return prevBooks.map((prevBook) =>
+                                  prevBook.id === book.id
+                                    ? { ...prevBook, uploadedImage: res[0].url }
+                                    : prevBook,
+                                );
+                              });
+                              alert("Upload Completed");
+                            }}
+                            onUploadError={(error: Error) => {
+                              // Do something with the error.
+                              alert(`ERROR! ${error.message}`);
+                            }}
+                          />
+                          <div className="flex flex-col items-center justify-center gap-2">
+                            <div
+                              className="flex h-8 w-8 cursor-pointer items-center
+                            justify-center rounded-md border"
+                              onClick={() => {
+                                book.uploadedImage &&
+                                  onSelectImage(book.id, book.uploadedImage);
+                              }}
+                            >
+                              {book.uploadedImage && (
+                                <img
+                                  src={book.uploadedImage}
+                                  className="h-full w-full rounded-md"
+                                />
+                              )}
+                            </div>
+                            <p className="text-[8px]">Your image</p>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
