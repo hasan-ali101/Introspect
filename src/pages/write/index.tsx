@@ -62,7 +62,7 @@ const dummyBooks: IBook[] = [
     label: true,
     text: "text-black",
     notebook: false,
-    coverImage: "/flowers.webp",
+    coverImage: "/skeleton.jpeg",
     imageFit: "object-fill",
     uploadedImage: "",
   },
@@ -80,7 +80,7 @@ const defaultImages = [
   "/wave.jpeg",
   "/stars.jpeg",
   "/venus.jpeg",
-  "/flowers.webp",
+  "/skeleton.jpeg",
 ];
 
 export default function Write() {
@@ -89,7 +89,6 @@ export default function Write() {
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
-  // const [uploadedImage, setUploadedImage] = useState<string>("");
 
   const onSelectColor = (id: string, color: string) => {
     setBooks((prevBooks) =>
@@ -127,7 +126,7 @@ export default function Write() {
     <main
       className={`flex min-h-screen flex-col items-center p-10 ${inter.className}`}
     >
-      <div id="books" className="flex scroll-mt-96 items-start p-6">
+      <div id="books" className="flex scroll-mt-96 flex-col items-center">
         <Carousel drag={!isEditing}>
           <CarouselContent>
             {books.map((book) => (
@@ -212,7 +211,7 @@ export default function Write() {
                     )}
                   >
                     <CircleX
-                      size={20}
+                      size={28}
                       className={cn(
                         !isEditing ? "hidden" : "flex",
                         "absolute right-2 top-2 cursor-pointer",
@@ -232,19 +231,13 @@ export default function Write() {
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="book" id="book" />
-                            <Label
-                              className="text-nowrap text-xs"
-                              htmlFor="option-one"
-                            >
+                            <Label className="text-nowrap" htmlFor="option-one">
                               Book
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="notebook" id="notebook" />
-                            <Label
-                              className="text-nowrap text-xs"
-                              htmlFor="option-two"
-                            >
+                            <Label className="text-nowrap" htmlFor="option-two">
                               Notebook
                             </Label>
                           </div>
@@ -258,25 +251,19 @@ export default function Write() {
                           {defaultColors.map((color) => (
                             <div
                               key={color}
-                              className={
-                                "flex h-8 w-8 items-center justify-center rounded-full border"
-                              }
+                              className={cn(
+                                book.color === color &&
+                                  "bg-slate-200 dark:bg-white",
+                                "flex h-10 w-10 items-center justify-center rounded-full border",
+                              )}
                             >
                               <div
                                 className={cn(
-                                  book.color === color &&
-                                    "bg-slate-200 dark:bg-white",
-                                  "flex h-8 w-8 items-center justify-center rounded-full border",
+                                  "h-8 w-8 cursor-pointer rounded-full hover:scale-105",
+                                  color,
                                 )}
-                              >
-                                <div
-                                  className={cn(
-                                    "h-6 w-6 cursor-pointer rounded-full hover:scale-105",
-                                    color,
-                                  )}
-                                  onClick={() => onSelectColor(book.id, color)}
-                                />
-                              </div>
+                                onClick={() => onSelectColor(book.id, color)}
+                              />
                             </div>
                           ))}
                         </div>
@@ -289,26 +276,20 @@ export default function Write() {
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="label" id="label" />
-                            <Label
-                              className="text-nowrap text-xs"
-                              htmlFor="option-one"
-                            >
+                            <Label className="text-nowrap" htmlFor="option-one">
                               Label
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="no label" id="no label" />
-                            <Label
-                              className="text-nowrap text-xs"
-                              htmlFor="option-two"
-                            >
+                            <Label className="text-nowrap" htmlFor="option-two">
                               No Label
                             </Label>
                           </div>
                         </RadioGroup>
                         <div className="flex w-full justify-between">
                           <div
-                            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border"
+                            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border"
                             onClick={() => {
                               setBooks((prevBooks) =>
                                 prevBooks.map((prevBook) =>
@@ -326,7 +307,7 @@ export default function Write() {
                               key={image}
                               className={cn(
                                 book.coverImage === image && "bg-slate-300",
-                                "h-8 w-8 cursor-pointer rounded-md border p-[1px] hover:scale-105",
+                                "h-10 w-10 cursor-pointer rounded-md border p-[1px] hover:scale-105",
                               )}
                               onClick={() => onSelectImage(book.id, image)}
                             >
@@ -340,44 +321,57 @@ export default function Write() {
                             </div>
                           ))}
                         </div>
-                        <div className="flex w-full items-start justify-between">
-                          <UploadButton
-                            className="ut-allowed-content:text-[8px] ut-button:bg-emerald-500 ut-button:text-sm ut-button:p-4"
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(res) => {
-                              // Do something with the response
-                              console.log("Files: ", res);
-                              setBooks((prevBooks) => {
-                                return prevBooks.map((prevBook) =>
-                                  prevBook.id === book.id
-                                    ? { ...prevBook, uploadedImage: res[0].url }
-                                    : prevBook,
-                                );
-                              });
-                              alert("Upload Completed");
-                            }}
-                            onUploadError={(error: Error) => {
-                              // Do something with the error.
-                              alert(`ERROR! ${error.message}`);
-                            }}
-                          />
-                          <div className="flex flex-col items-center justify-center gap-2">
-                            <div
-                              className="flex h-8 w-8 cursor-pointer items-center
-                            justify-center rounded-md border"
-                              onClick={() => {
-                                book.uploadedImage &&
-                                  onSelectImage(book.id, book.uploadedImage);
+                        <div className="flex flex-col gap-3">
+                          <p className="text-sm">Upload a cover image:</p>
+
+                          <div className="flex w-full items-start justify-between">
+                            <UploadButton
+                              className="ut-allowed-content:text-[8px] ut-button:bg-zinc-100 ut-button:border ut-button:border-white  hover:ut-button:bg-zinc-100/80 ut-button:shadown-md ut-button:dark:text-white ut-button:text-black ut-button:dark:bg-zinc-800 ut-button:hover:dark:bg-zinc-800/80 ut-button:text-sm ut-button:p-4"
+                              endpoint="imageUploader"
+                              onClientUploadComplete={(res) => {
+                                // Do something with the response
+                                console.log("Files: ", res);
+                                setBooks((prevBooks) => {
+                                  return prevBooks.map((prevBook) =>
+                                    prevBook.id === book.id
+                                      ? {
+                                          ...prevBook,
+                                          uploadedImage: res[0].url,
+                                        }
+                                      : prevBook,
+                                  );
+                                });
+                                alert("Upload Completed");
                               }}
-                            >
-                              {book.uploadedImage && (
-                                <img
-                                  src={book.uploadedImage}
-                                  className="h-full w-full rounded-md"
-                                />
-                              )}
+                              onUploadError={(error: Error) => {
+                                // Do something with the error.
+                                alert(`ERROR! ${error.message}`);
+                              }}
+                            />
+                            <div className="flex flex-col items-center justify-center gap-2">
+                              <div
+                                className={cn(
+                                  book.coverImage === book.uploadedImage &&
+                                    book.uploadedImage &&
+                                    "bg-slate-300",
+                                  "h-10 w-10 cursor-pointer rounded-md border-2 p-[1px] hover:scale-105",
+                                )}
+                                onClick={() => {
+                                  book.uploadedImage &&
+                                    onSelectImage(book.id, book.uploadedImage);
+                                }}
+                              >
+                                {book.uploadedImage && (
+                                  <img
+                                    src={book.uploadedImage}
+                                    className="h-full w-full rounded-md"
+                                  />
+                                )}
+                              </div>
+                              {/* <p className="text-[8px] text-gray-600">
+                              Your image
+                            </p> */}
                             </div>
-                            <p className="text-[8px]">Your image</p>
                           </div>
                         </div>
                       </div>
@@ -401,6 +395,7 @@ export default function Write() {
           {!isEditing && <CarouselNext />}
           {!isEditing && <CarouselPrevious />}
         </Carousel>
+        {isEditing && <Button>Save changes</Button>}
       </div>
     </main>
   );
