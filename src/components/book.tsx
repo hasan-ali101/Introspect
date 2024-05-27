@@ -31,31 +31,34 @@ const Book = ({
           alt="book"
           width={275}
           height={370}
-        ></Image>
+        />
         <div
           className={cn(
             color,
-            "absolute bottom-[0.3px] left-[0px] right-[4.5px] top-[4.5px] flex justify-center rounded-l-sm rounded-r-sm border border-gray-500 p-1 shadow-md sm:left-[1px] sm:right-[7px] sm:top-[6.5px] sm:p-2",
+            "absolute bottom-[0.3px] left-[0px] right-[4.5px] top-[4.5px] flex justify-center rounded-l-sm rounded-r-sm border border-gray-500 shadow-md sm:left-[1px] sm:right-[7px] sm:top-[6.5px]",
           )}
         >
-          {coverImage && (
-            <img
-              src={coverImage}
-              alt="cover"
-              className="absolute bottom-0 left-0 right-0 top-0 h-full w-full object-cover"
-            />
-          )}
-
-          <div
-            className={cn(
-              notebook && "ml-[5px] sm:ml-1",
-              label ? "bg-white" : "bg-transparent",
-              "flex h-fit min-h-6 w-full items-center justify-center rounded-md px-[1px] py-1 text-center  opacity-95",
+          <div className="relative h-full w-full">
+            {coverImage && (
+              <img
+                src={coverImage}
+                alt="cover"
+                className="absolute inset-0 h-full w-auto object-cover"
+              />
             )}
-          >
-            <p className="line-clamp-3 max-h-12 text-[7px] font-semibold text-black sm:line-clamp-4 sm:max-h-16 sm:text-[10px]">
-              {title}
-            </p>
+            <div className="px-2 pt-2">
+              <div
+                className={cn(
+                  notebook && "ml-[5px] sm:ml-1",
+                  label ? "bg-white" : "bg-transparent",
+                  "flex  min-h-6 w-full items-center justify-center rounded-md text-center opacity-95",
+                )}
+              >
+                <p className="line-clamp-3 max-h-12 text-[7px] font-semibold text-black sm:line-clamp-4 sm:max-h-16 sm:text-[10px]">
+                  {title}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         {notebook && (
