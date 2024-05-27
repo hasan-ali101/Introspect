@@ -6,6 +6,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselApi,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -90,16 +91,19 @@ export default function Write() {
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
+    undefined,
+  );
 
   const { toast } = useToast();
 
-  const onSelectColor = (id: string, color: string) => {
+  const colorSelectHandler = (id: string, color: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) => (book.id === id ? { ...book, color } : book)),
     );
   };
 
-  const onSelectNotebook = (e: string) => {
+  const notebookSelectHandler = (e: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
         book.id === selectedBook?.id
@@ -109,7 +113,7 @@ export default function Write() {
     );
   };
 
-  const onSelectLabel = (e: string) => {
+  const labelSelectHandler = (e: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
         book.id === selectedBook?.id ? { ...book, label: e === "label" } : book,
@@ -117,7 +121,7 @@ export default function Write() {
     );
   };
 
-  const onSelectImage = (id: string, image: string) => {
+  const imageSelectHandler = (id: string, image: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
         book.id === id ? { ...book, coverImage: image } : book,
@@ -125,19 +129,45 @@ export default function Write() {
     );
   };
 
+  const addBookHandler = () => {
+    setBooks((prevBooks) => [
+      ...prevBooks,
+      {
+        id: `${prevBooks.length + 1}`, // Need to gen a unique id
+        title: "New Book Title",
+        color: "bg-red-300",
+        label: true,
+        text: "text-black",
+        notebook: false,
+        coverImage: "",
+        uploadedImage: "",
+      },
+    ]);
+    setSelectedBook(books[books.length - 1]);
+    setIsEditing(true);
+    carouselApi?.scrollTo(books.length);
+  };
+
   return (
     <main
-      className={`flex min-h-screen flex-col items-center p-10 ${inter.className}`}
+      className={`relative flex min-h-screen flex-col items-center px-10 pb-10 ${inter.className}`}
     >
-      <div id="books" className="flex scroll-mt-96 flex-col items-center">
-        <Carousel drag={!isEditing}>
+      <div className="my-6 flex w-full flex-col gap-1 py-4 text-center">
+        <h1 className="text-xl font-semibold">Your Library</h1>
+        <p className=" text-gray-500">
+          Write your thoughts, ideas, and stories here.
+        </p>
+      </div>
+
+      <div className="flex flex-col items-center">
+        <Carousel setApi={setCarouselApi} drag={!isEditing}>
           <CarouselContent>
             {books.map((book) => (
               <CarouselItem
                 key={book.id}
                 className={cn(
                   isEditing ? "w-24" : "w-20",
-                  "flex justify-center py-4 sm:w-32 md:w-40",
+                  "flex justify-center pb-4 sm:w-32 md:w-40",
                 )}
               >
                 <div
@@ -157,7 +187,7 @@ export default function Write() {
                         {book.title}
                       </p>
                     )}
-                    {isEditing && selectedBook?.id === book.id && (
+                    {isEditing && (
                       <div className="relative mx-4">
                         <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
                         <input
@@ -207,7 +237,7 @@ export default function Write() {
                   <div
                     id="editor"
                     className={cn(
-                      isEditing && selectedBook?.id === book.id
+                      isEditing
                         ? "h-full md:w-80"
                         : "h-0 border-transparent md:w-0",
                       "relative w-full scroll-my-96 overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
@@ -223,13 +253,13 @@ export default function Write() {
                         setIsEditing(false), setSelectedBook(undefined)
                       )}
                     />
-                    {isEditing && selectedBook?.id === book.id && (
+                    {isEditing && (
                       <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 py-8">
                         <RadioGroup
-                          onValueChange={(e) => onSelectNotebook(e)}
+                          onValueChange={(e) => notebookSelectHandler(e)}
                           className="grid-flow-col"
                           defaultValue={
-                            selectedBook.notebook ? "notebook" : "book"
+                            selectedBook?.notebook ? "notebook" : "book"
                           }
                         >
                           <div className="flex items-center space-x-2">
@@ -265,13 +295,15 @@ export default function Write() {
                                   "h-8 w-8 cursor-pointer rounded-full hover:scale-105",
                                   color,
                                 )}
-                                onClick={() => onSelectColor(book.id, color)}
+                                onClick={() =>
+                                  colorSelectHandler(book.id, color)
+                                }
                               />
                             </div>
                           ))}
                         </div>
                         <RadioGroup
-                          onValueChange={(e) => onSelectLabel(e)}
+                          onValueChange={(e) => labelSelectHandler(e)}
                           className="grid-flow-col"
                           defaultValue={
                             selectedBook.label ? "label" : "no label"
@@ -312,7 +344,7 @@ export default function Write() {
                                 book.coverImage === image && "bg-slate-300",
                                 "h-10 w-10 cursor-pointer rounded-md border p-[1px] hover:scale-105",
                               )}
-                              onClick={() => onSelectImage(book.id, image)}
+                              onClick={() => imageSelectHandler(book.id, image)}
                             >
                               <Image
                                 className="h-full w-full rounded-md object-cover"
@@ -329,7 +361,7 @@ export default function Write() {
 
                           <div className="flex w-full items-start justify-between">
                             <UploadButton
-                              className="ut-allowed-content:text-[8px] ut-button:bg-zinc-100 ut-button:border ut-button:border-white  hover:ut-button:bg-zinc-100/80 ut-button:shadown-md ut-button:dark:text-white ut-button:text-black ut-button:dark:bg-zinc-800 ut-button:hover:dark:bg-zinc-800/80 ut-button:text-sm ut-button:p-4"
+                              className="ut-allowed-content:text-[8px] ut-button:bg-zinc-100 ut-button:border ut-button:border-zinc-500 dark:ut-button:border-white hover:ut-button:bg-zinc-100/80 ut-button:shadown-md ut-button:dark:text-white ut-button:text-black ut-button:dark:bg-zinc-800 ut-button:hover:dark:bg-zinc-800/80 ut-button:text-sm ut-button:p-4"
                               endpoint="imageUploader"
                               onClientUploadComplete={(res) => {
                                 // Do something with the response
@@ -365,7 +397,10 @@ export default function Write() {
                                 )}
                                 onClick={() => {
                                   book.uploadedImage &&
-                                    onSelectImage(book.id, book.uploadedImage);
+                                    imageSelectHandler(
+                                      book.id,
+                                      book.uploadedImage,
+                                    );
                                 }}
                               >
                                 {book.uploadedImage && (
@@ -392,10 +427,15 @@ export default function Write() {
                 <p className="text-center text-sm font-semibold">
                   {"Add a new book?"}
                 </p>
-                <div className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-xl bg-gray-100 pb-2 text-7xl text-gray-600 transition-transform hover:scale-105">
+                <div
+                  onClick={addBookHandler}
+                  className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-xl bg-gray-100 pb-2 text-7xl text-gray-600 transition-transform hover:scale-105"
+                >
                   +
                 </div>
-                <Button className="text-xs md:text-sm">Add book</Button>
+                <Button className="text-xs md:text-sm" onClick={addBookHandler}>
+                  Add book
+                </Button>
               </div>
             </CarouselItem>
           </CarouselContent>
@@ -404,6 +444,14 @@ export default function Write() {
         </Carousel>
         {isEditing && <Button>Save changes</Button>}
       </div>
+
+      {!isEditing && (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <Button variant={"secondary"} onClick={addBookHandler}>
+            + Add a new book
+          </Button>
+        </div>
+      )}
     </main>
   );
 }
