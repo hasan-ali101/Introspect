@@ -20,6 +20,8 @@ import Image from "next/image";
 import { UploadButton } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import { getBooks } from "@/pages/api/books";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,30 +36,21 @@ const dummyBooks: IBook[] = [
     uploadedImage: "",
   },
   {
-    id: 2,
-    title: "Coding Notes - Next.js",
-    color: "bg-purple-300",
+    id: 1,
+    title: "My 2024 meditation journal",
+    color: "bg-red-300",
     label: false,
-    notebook: true,
-    coverImage: "/venus.jpeg",
+    notebook: false,
+    coverImage: "/flowers.webp",
     uploadedImage: "",
   },
   {
-    id: 3,
-    title: "the bongo book",
-    color: "bg-blue-300",
-    label: true,
+    id: 1,
+    title: "My 2024 meditation journal",
+    color: "bg-red-300",
+    label: false,
     notebook: false,
-    coverImage: "/wave.jpeg",
-    uploadedImage: "",
-  },
-  {
-    id: 4,
-    title: "the 4th book",
-    color: "bg-blue-300",
-    label: true,
-    notebook: false,
-    coverImage: "/spaces.jpeg",
+    coverImage: "/flowers.webp",
     uploadedImage: "",
   },
 ];
@@ -78,16 +71,20 @@ const defaultImages = [
 ];
 
 export default function Write() {
+  const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
+
   const [isEditing, setIsEditing] = useState(false);
-  const [books, setBooks] = useState(dummyBooks);
+  const [books, setBooks] = useState([
+    ...dummyBooks,
+    ...dummyBooks,
+    ...dummyBooks,
+  ]);
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
     undefined,
   );
-
-  console.log(selectedBook);
 
   const { toast } = useToast();
 
@@ -445,4 +442,19 @@ export default function Write() {
       )}
     </main>
   );
+}
+
+export async function getServerSideProps() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["books"],
+    queryFn: getBooks,
+  });
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 }

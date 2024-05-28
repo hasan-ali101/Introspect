@@ -41,7 +41,7 @@ const Book = ({
               <img
                 src={coverImage}
                 alt="cover"
-                className="absolute inset-0 h-full w-auto object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
               />
             )}
             {label && (

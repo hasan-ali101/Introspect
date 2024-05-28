@@ -1,26 +1,27 @@
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import { getBooks } from "@/pages/api/books";
 
-const supabase = createClient(
-  "https://ysbkdqnwrgomzajzcvau.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzYmtkcW53cmdvbXphanpjdmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY4NDAyNTYsImV4cCI6MjAzMjQxNjI1Nn0.uG95GiBlGpxZkQa-1e0lO-yutE9TaqjrZu8cYPShYIg",
-);
+// This could also be getServerSideProps
+
+export async function getServerSideProps() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["posts"],
+    queryFn: getBooks,
+  });
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
+}
 
 function App() {
-  const [notes, setNotes] = useState<any[]>([]);
+  const { data } = useQuery({ queryKey: ["posts"], queryFn: getBooks });
 
-  useEffect(() => {
-    getCountries();
-  }, []);
-
-  async function getCountries() {
-    const { data } = await supabase.from("books").select("*");
-    if (data) {
-      setNotes(data);
-    }
-  }
-
-  return <pre>{JSON.stringify(notes, null, 2)}</pre>;
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }
 
 export default App;
