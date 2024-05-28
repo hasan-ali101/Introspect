@@ -87,6 +87,8 @@ export default function Write() {
     undefined,
   );
 
+  console.log(selectedBook);
+
   const { toast } = useToast();
 
   const colorSelectHandler = (id: number, color: string) => {
@@ -95,20 +97,18 @@ export default function Write() {
     );
   };
 
-  const notebookSelectHandler = (e: string) => {
+  const notebookSelectHandler = (id: number, e: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
-        book.id === selectedBook?.id
-          ? { ...book, notebook: e === "notebook" }
-          : book,
+        book.id === id ? { ...book, notebook: e === "notebook" } : book,
       ),
     );
   };
 
-  const labelSelectHandler = (e: string) => {
+  const labelSelectHandler = (id: number, e: string) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
-        book.id === selectedBook?.id ? { ...book, label: e === "label" } : book,
+        book.id === id ? { ...book, label: e === "label" } : book,
       ),
     );
   };
@@ -247,7 +247,9 @@ export default function Write() {
                     {isEditing && (
                       <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
                         <RadioGroup
-                          onValueChange={(e) => notebookSelectHandler(e)}
+                          onValueChange={(e) =>
+                            notebookSelectHandler(book.id, e)
+                          }
                           className="grid-flow-col"
                           defaultValue={
                             selectedBook?.notebook ? "notebook" : "book"
@@ -294,11 +296,9 @@ export default function Write() {
                           ))}
                         </div>
                         <RadioGroup
-                          onValueChange={(e) => labelSelectHandler(e)}
+                          onValueChange={(e) => labelSelectHandler(book.id, e)}
                           className="grid-flow-col"
-                          defaultValue={
-                            selectedBook?.label ? "label" : "no label"
-                          }
+                          defaultValue={book.label ? "label" : "no label"}
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="label" id="label" />

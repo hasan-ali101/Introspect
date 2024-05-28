@@ -15,8 +15,6 @@ const Book = ({
   id,
   coverImage,
 }: BookProps) => {
-  console.log(coverImage);
-
   return (
     <div>
       <div
@@ -35,7 +33,7 @@ const Book = ({
         <div
           className={cn(
             color,
-            "absolute bottom-[0.3px] left-[0px] right-[4.5px] top-[4.5px] flex justify-center rounded-l-sm rounded-r-sm border border-gray-500 shadow-md sm:left-[1px] sm:right-[7px] sm:top-[6.5px]",
+            "absolute bottom-[0.2px] left-[0px] right-[4.5px] top-[4.5px] flex justify-center rounded-l-sm rounded-r-sm border border-gray-500 shadow-md sm:left-[1px] sm:right-[7px] sm:top-[6.4px]",
           )}
         >
           <div className="relative h-full w-full">
@@ -46,19 +44,20 @@ const Book = ({
                 className="absolute inset-0 h-full w-auto object-cover"
               />
             )}
-            <div className="px-2 pt-2">
-              <div
-                className={cn(
-                  notebook && "ml-[5px] sm:ml-1",
-                  label ? "bg-white" : "bg-transparent",
-                  "flex  min-h-6 w-full items-center justify-center rounded-md text-center opacity-95",
-                )}
-              >
-                <p className="line-clamp-3 max-h-12 text-[7px] font-semibold text-black sm:line-clamp-4 sm:max-h-16 sm:text-[10px]">
-                  {title}
-                </p>
+            {label && (
+              <div className="px-2 pt-2">
+                <div
+                  className={cn(
+                    notebook && "ml-[5px] sm:ml-1",
+                    "flex  min-h-6 w-full items-center justify-center rounded-md bg-white text-center opacity-95",
+                  )}
+                >
+                  <p className="line-clamp-3 max-h-12 text-[7px] font-semibold text-black sm:line-clamp-4 sm:max-h-16 sm:text-[10px]">
+                    {title}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         {notebook && (
