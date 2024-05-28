@@ -216,9 +216,9 @@ export default function Write() {
                     id="editor"
                     className={cn(
                       isEditing
-                        ? "h-full md:w-80"
-                        : "h-0 border-transparent md:w-0",
-                      "relative w-full overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
+                        ? "h-full w-72 md:w-80"
+                        : "w-0 border-transparent",
+                      "relative overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
                     )}
                   >
                     <CircleX

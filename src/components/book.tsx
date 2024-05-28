@@ -20,7 +20,7 @@ const Book = ({
       <div
         className={cn(
           !editMode && "hover:scale-105",
-          "relative w-20 cursor-pointer transition-all sm:w-28",
+          "relative  w-28 cursor-pointer transition-all",
         )}
       >
         <Image
@@ -33,7 +33,7 @@ const Book = ({
         <div
           className={cn(
             color,
-            "absolute bottom-[0.2px] left-[0px] right-[4.5px] top-[4.5px] flex justify-center rounded-l-sm rounded-r-sm border border-gray-500 shadow-md sm:left-[1px] sm:right-[7px] sm:top-[6.4px]",
+            "absolute bottom-[0.2px] left-[1px] right-[7px] top-[6.4px] flex justify-center rounded-l-sm rounded-r-sm border border-gray-500 shadow-md",
           )}
         >
           <div className="relative h-full w-full">
@@ -48,11 +48,11 @@ const Book = ({
               <div className="px-2 pt-2">
                 <div
                   className={cn(
-                    notebook && "ml-[5px] sm:ml-1",
+                    notebook && "ml-1",
                     "flex  min-h-6 w-full items-center justify-center rounded-md bg-white text-center opacity-95",
                   )}
                 >
-                  <p className="line-clamp-3 max-h-12 text-[7px] font-semibold text-black sm:line-clamp-4 sm:max-h-16 sm:text-[10px]">
+                  <p className="line-clamp-4 max-h-16 text-[10px] font-semibold text-black">
                     {title}
                   </p>
                 </div>
@@ -61,14 +61,14 @@ const Book = ({
           </div>
         </div>
         {notebook && (
-          <div className="absolute -left-[2px] top-0 flex h-full w-2 flex-col justify-around py-2 sm:-left-[1] sm:w-3">
+          <div className="absolute -left-[1.5px] top-0 flex h-full w-3 flex-col justify-around py-2">
             <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
             <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
             <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
             <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
             <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
             <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
-            <div className="hidden h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100 sm:flex"></div>
+            <div className="flex  h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
           </div>
         )}
       </div>
