@@ -74,11 +74,7 @@ export default function Write() {
   const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [books, setBooks] = useState([
-    ...dummyBooks,
-    ...dummyBooks,
-    ...dummyBooks,
-  ]);
+  const [books, setBooks] = useState(data || dummyBooks);
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
@@ -150,15 +146,9 @@ export default function Write() {
 
       <div className="flex flex-col items-center">
         <Carousel setApi={setCarouselApi} drag={!isEditing}>
-          <CarouselContent>
+          <CarouselContent className="mb-6">
             {books.map((book) => (
-              <CarouselItem
-                key={book.id}
-                className={cn(
-                  isEditing ? "w-24" : "w-20",
-                  "flex justify-center pb-4 sm:w-32 md:w-40",
-                )}
-              >
+              <CarouselItem key={book.id}>
                 <div
                   className={cn(
                     isEditing ? "gap-10" : "gap-0",
