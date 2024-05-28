@@ -164,7 +164,7 @@ export default function Write() {
               >
                 <div
                   className={cn(
-                    isEditing ? "gap-10":"gap-0",
+                    isEditing ? "gap-10" : "gap-0",
                     "flex flex-col items-center justify-center md:flex-row",
                   )}
                 >
@@ -241,8 +241,7 @@ export default function Write() {
                         "absolute right-2 top-2 cursor-pointer",
                       )}
                       onClick={() => (
-                        setIsEditing(false), setSelectedBook(undefined),
-                      
+                        setIsEditing(false), setSelectedBook(undefined)
                       )}
                     />
                     {isEditing && (
@@ -353,7 +352,7 @@ export default function Write() {
 
                           <div className="flex w-full items-start justify-between">
                             <UploadButton
-                              className="ut-allowed-content:text-[8px] ut-button:bg-zinc-100 ut-button:border ut-button:border-zinc-500 dark:ut-button:border-white hover:ut-button:bg-zinc-100/80 ut-button:shadown-md ut-button:dark:text-white ut-button:text-black ut-button:dark:bg-zinc-800 ut-button:hover:dark:bg-zinc-800/80 ut-button:text-sm ut-button:p-4"
+                              className="ut-button:shadown-md ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:bg-zinc-800 ut-button:dark:text-white ut-button:hover:dark:bg-zinc-800/80"
                               endpoint="imageUploader"
                               onClientUploadComplete={(res) => {
                                 // Do something with the response
