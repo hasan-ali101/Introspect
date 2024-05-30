@@ -74,7 +74,7 @@ export default function Write() {
   const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [books, setBooks] = useState<IBook[]>(data || dummyBooks);
+  const [books, setBooks] = useState<IBook[]>(dummyBooks);
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
