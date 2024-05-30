@@ -74,7 +74,7 @@ export default function Write() {
   const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [books, setBooks] = useState(data || dummyBooks);
+  const [books, setBooks] = useState<IBook[]>(data || dummyBooks);
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
@@ -191,7 +191,7 @@ export default function Write() {
                       color={book.color}
                       label={book.label}
                       notebook={book.notebook}
-                      editMode={isEditing && selectedBook?.id === book.id}
+                      editMode={isEditing}
                       coverImage={book.coverImage}
                     />
                     {!isEditing && (
@@ -216,7 +216,7 @@ export default function Write() {
                     id="editor"
                     className={cn(
                       isEditing
-                        ? "h-full w-72 md:w-80"
+                        ? "h-full w-80 md:w-80"
                         : "w-0 border-transparent",
                       "relative overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
                     )}
@@ -238,9 +238,7 @@ export default function Write() {
                             notebookSelectHandler(book.id, e)
                           }
                           className="grid-flow-col"
-                          defaultValue={
-                            selectedBook?.notebook ? "notebook" : "book"
-                          }
+                          defaultValue={book.notebook ? "notebook" : "book"}
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="book" id="book" />
@@ -423,7 +421,7 @@ export default function Write() {
         {isEditing && <Button>Save changes</Button>}
       </div>
 
-      {!isEditing && (
+      {!isEditing && books.length > 0 && (
         <div className="mt-6 flex items-center justify-center gap-2">
           <Button variant={"secondary"} onClick={addBookHandler}>
             + Add a new book
