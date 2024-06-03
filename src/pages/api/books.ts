@@ -1,6 +1,8 @@
-import { supabase } from "@/lib/utils";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export async function getBooks() {
-  const { data } = await supabase.from("books").select("*");
-  return data;
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  // res.status(200).json(data);
 }

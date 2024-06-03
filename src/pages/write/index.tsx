@@ -21,13 +21,13 @@ import { UploadButton } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
-import { getBooks } from "@/pages/api/books";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const dummyBooks: IBook[] = [
   {
     id: 1,
+    userId: 1,
     title: "My 2024 meditation journal",
     color: "bg-red-300",
     label: true,
@@ -37,6 +37,7 @@ const dummyBooks: IBook[] = [
   },
   {
     id: 2,
+    userId: 1,
     title: "A book of poems",
     color: "bg-emerald-300",
     label: false,
@@ -46,6 +47,7 @@ const dummyBooks: IBook[] = [
   },
   {
     id: 3,
+    userId: 1,
     title: "A third dummy book",
     color: "bg-red-300",
     label: true,
@@ -71,7 +73,7 @@ const defaultImages = [
 ];
 
 export default function Write() {
-  const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
+  // const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
 
   const [isEditing, setIsEditing] = useState(false);
   const [books, setBooks] = useState<IBook[]>(dummyBooks);
@@ -119,6 +121,7 @@ export default function Write() {
       ...prevBooks,
       {
         id: prevBooks.length + 1, // Need to gen a unique id
+        userId: 1,
         title: "New Book Title",
         color: "bg-red-300",
         label: true,
@@ -186,6 +189,7 @@ export default function Write() {
                       </div>
                     )}
                     <Book
+                      userId={book.userId}
                       id={book.id}
                       title={book.title}
                       color={book.color}
@@ -432,17 +436,17 @@ export default function Write() {
   );
 }
 
-export async function getServerSideProps() {
-  const queryClient = new QueryClient();
+// export async function getServerSideProps() {
+//   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["books"],
-    queryFn: getBooks,
-  });
+//   await queryClient.prefetchQuery({
+//     queryKey: ["books"],
+//     queryFn: getBooks,
+//   });
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-}
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient),
+//     },
+//   };
+// }
