@@ -21,6 +21,7 @@ import { UploadButton } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import getBooks from "@/utils/getBooks";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -73,10 +74,11 @@ const defaultImages = [
 ];
 
 export default function Write() {
-  // const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
+  const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
+  console.log("Data:", data);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [books, setBooks] = useState<IBook[]>(dummyBooks);
+  const [books, setBooks] = useState<IBook[]>(data || []);
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
@@ -150,258 +152,273 @@ export default function Write() {
       <div className="flex flex-col items-center">
         <Carousel setApi={setCarouselApi} drag={!isEditing}>
           <CarouselContent className="mb-6">
-            {books.map((book) => (
-              <CarouselItem key={book.id}>
-                <div
-                  className={cn(
-                    isEditing ? "gap-10" : "gap-0",
-                    "flex flex-col items-center justify-center md:flex-row",
-                  )}
-                >
+            {books &&
+              books.map((book) => (
+                <CarouselItem key={book.id}>
                   <div
                     className={cn(
-                      !isEditing && "py-10 md:min-w-80",
-                      " mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-8 shadow-sm md:mx-0",
+                      isEditing ? "gap-10" : "gap-0",
+                      "flex flex-col items-center justify-center md:flex-row",
                     )}
                   >
-                    {!isEditing && (
-                      <p className="px-4 text-center text-sm font-semibold md:text-lg">
-                        {book.title}
-                      </p>
-                    )}
-                    {isEditing && (
-                      <div className="relative mx-4">
-                        <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
-                        <input
-                          type="text"
-                          className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100 dark:border-gray-700"
-                          value={book.title}
-                          onChange={(e) =>
-                            setBooks((prevBooks) =>
-                              prevBooks.map((prevBook) =>
-                                prevBook.id === book.id
-                                  ? { ...prevBook, title: e.target.value }
-                                  : prevBook,
-                              ),
-                            )
-                          }
-                        />
-                      </div>
-                    )}
-                    <Book
-                      userId={book.userId}
-                      id={book.id}
-                      title={book.title}
-                      color={book.color}
-                      label={book.label}
-                      notebook={book.notebook}
-                      editMode={isEditing}
-                      coverImage={book.coverImage}
-                    />
-                    {!isEditing && (
-                      <>
-                        <p
-                          className="cursor-pointer text-xs underline"
-                          onClick={() => {
-                            setIsEditing(true);
-                            setSelectedBook(book);
-                          }}
-                        >
-                          Edit Title/Cover
-                        </p>
-                        <Button className="text-xs md:text-sm">
-                          Continue Writing
-                        </Button>
-                      </>
-                    )}
-                  </div>
-
-                  <div
-                    id="editor"
-                    className={cn(
-                      isEditing
-                        ? "h-full w-80 md:w-80"
-                        : "w-0 border-transparent",
-                      "relative overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
-                    )}
-                  >
-                    <CircleX
-                      size={28}
+                    <div
                       className={cn(
-                        !isEditing ? "hidden" : "flex",
-                        "absolute right-2 top-2 cursor-pointer",
+                        !isEditing && "py-10 md:min-w-80",
+                        " mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-8 shadow-sm md:mx-0",
                       )}
-                      onClick={() => (
-                        setIsEditing(false), setSelectedBook(undefined)
+                    >
+                      {!isEditing && (
+                        <p className="px-4 text-center text-sm font-semibold md:text-lg">
+                          {book.title}
+                        </p>
                       )}
-                    />
-                    {isEditing && (
-                      <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
-                        <RadioGroup
-                          onValueChange={(e) =>
-                            notebookSelectHandler(book.id, e)
-                          }
-                          className="grid-flow-col"
-                          defaultValue={book.notebook ? "notebook" : "book"}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="book" id="book" />
-                            <Label className="text-nowrap" htmlFor="option-one">
-                              Book
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="notebook" id="notebook" />
-                            <Label className="text-nowrap" htmlFor="option-two">
-                              Notebook
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                        <div
-                          className={cn(
-                            !isEditing && "hidden",
-                            "flex w-full justify-between",
-                          )}
-                        >
-                          {defaultColors.map((color) => (
-                            <div
-                              key={color}
-                              className={cn(
-                                book.color === color &&
-                                  "bg-slate-200 dark:bg-white",
-                                "flex h-10 w-10 items-center justify-center rounded-full border",
-                              )}
-                            >
-                              <div
-                                className={cn(
-                                  "h-8 w-8 cursor-pointer rounded-full hover:scale-105",
-                                  color,
-                                )}
-                                onClick={() =>
-                                  colorSelectHandler(book.id, color)
-                                }
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        <RadioGroup
-                          onValueChange={(e) => labelSelectHandler(book.id, e)}
-                          className="grid-flow-col"
-                          defaultValue={book.label ? "label" : "no label"}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="label" id="label" />
-                            <Label className="text-nowrap" htmlFor="option-one">
-                              Label
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="no label" id="no label" />
-                            <Label className="text-nowrap" htmlFor="option-two">
-                              No Label
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                        <div className="flex w-full justify-between">
-                          <div
-                            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border"
-                            onClick={() => {
+                      {isEditing && (
+                        <div className="relative mx-4">
+                          <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
+                          <input
+                            type="text"
+                            className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100 dark:border-gray-700"
+                            value={book.title}
+                            onChange={(e) =>
                               setBooks((prevBooks) =>
                                 prevBooks.map((prevBook) =>
                                   prevBook.id === book.id
-                                    ? { ...prevBook, coverImage: "" }
+                                    ? { ...prevBook, title: e.target.value }
                                     : prevBook,
                                 ),
-                              );
+                              )
+                            }
+                          />
+                        </div>
+                      )}
+                      <Book
+                        userId={book.userId}
+                        id={book.id}
+                        title={book.title}
+                        color={book.color}
+                        label={book.label}
+                        notebook={book.notebook}
+                        editMode={isEditing}
+                        coverImage={book.coverImage}
+                      />
+                      {!isEditing && (
+                        <>
+                          <p
+                            className="cursor-pointer text-xs underline"
+                            onClick={() => {
+                              setIsEditing(true);
+                              setSelectedBook(book);
                             }}
                           >
-                            <CircleOff className=" h-4 w-4" />
-                          </div>
-                          {defaultImages.map((image) => (
-                            <div
-                              key={image}
-                              className={cn(
-                                book.coverImage === image && "bg-slate-300",
-                                "h-10 w-10 cursor-pointer rounded-md border p-[1px] hover:scale-105",
-                              )}
-                              onClick={() => imageSelectHandler(book.id, image)}
-                            >
-                              <Image
-                                className="h-full w-full rounded-md object-cover"
-                                src={image}
-                                width={100}
-                                height={100}
-                                alt={image}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        <div className="flex flex-col gap-3">
-                          <p className="text-sm">Upload a cover image:</p>
+                            Edit Title/Cover
+                          </p>
+                          <Button className="text-xs md:text-sm">
+                            Continue Writing
+                          </Button>
+                        </>
+                      )}
+                    </div>
 
-                          <div className="flex w-full items-start justify-between">
-                            <UploadButton
-                              className="ut-button:shadown-md ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:bg-zinc-800 ut-button:dark:text-white ut-button:hover:dark:bg-zinc-800/80"
-                              endpoint="imageUploader"
-                              onClientUploadComplete={(res) => {
-                                // Do something with the response
-                                console.log("Files: ", res);
-                                setBooks((prevBooks) => {
-                                  return prevBooks.map((prevBook) =>
-                                    prevBook.id === book.id
-                                      ? {
-                                          ...prevBook,
-                                          uploadedImage: res[0].url,
-                                        }
-                                      : prevBook,
-                                  );
-                                });
-                                toast({
-                                  description: "Image Upload Successful",
-                                });
-                              }}
-                              onUploadError={(error: Error) => {
-                                // Do something with the error.
-                                toast({
-                                  description: "Image Upload Error",
-                                });
-                              }}
-                            />
-                            <div className="flex flex-col items-center justify-center gap-2">
-                              <div
-                                className={cn(
-                                  book.coverImage === book.uploadedImage &&
-                                    book.uploadedImage &&
-                                    "bg-slate-300",
-                                  "h-10 w-10 cursor-pointer rounded-md border-2 p-[1px] hover:scale-105",
-                                )}
-                                onClick={() => {
-                                  book.uploadedImage &&
-                                    imageSelectHandler(
-                                      book.id,
-                                      book.uploadedImage,
-                                    );
-                                }}
+                    <div
+                      id="editor"
+                      className={cn(
+                        isEditing
+                          ? "h-full w-80 md:w-80"
+                          : "w-0 border-transparent",
+                        "relative overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
+                      )}
+                    >
+                      <CircleX
+                        size={28}
+                        className={cn(
+                          !isEditing ? "hidden" : "flex",
+                          "absolute right-2 top-2 cursor-pointer",
+                        )}
+                        onClick={() => (
+                          setIsEditing(false), setSelectedBook(undefined)
+                        )}
+                      />
+                      {isEditing && (
+                        <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
+                          <RadioGroup
+                            onValueChange={(e) =>
+                              notebookSelectHandler(book.id, e)
+                            }
+                            className="grid-flow-col"
+                            defaultValue={book.notebook ? "notebook" : "book"}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="book" id="book" />
+                              <Label
+                                className="text-nowrap"
+                                htmlFor="option-one"
                               >
-                                {book.uploadedImage && (
-                                  <img
-                                    src={book.uploadedImage}
-                                    className="h-full w-full rounded-md"
-                                  />
+                                Book
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="notebook" id="notebook" />
+                              <Label
+                                className="text-nowrap"
+                                htmlFor="option-two"
+                              >
+                                Notebook
+                              </Label>
+                            </div>
+                          </RadioGroup>
+                          <div
+                            className={cn(
+                              !isEditing && "hidden",
+                              "flex w-full justify-between",
+                            )}
+                          >
+                            {defaultColors.map((color) => (
+                              <div
+                                key={color}
+                                className={cn(
+                                  book.color === color &&
+                                    "bg-slate-200 dark:bg-white",
+                                  "flex h-10 w-10 items-center justify-center rounded-full border",
                                 )}
+                              >
+                                <div
+                                  className={cn(
+                                    "h-8 w-8 cursor-pointer rounded-full hover:scale-105",
+                                    color,
+                                  )}
+                                  onClick={() =>
+                                    colorSelectHandler(book.id, color)
+                                  }
+                                />
                               </div>
-                              {/* <p className="text-[8px] text-gray-600">
+                            ))}
+                          </div>
+                          <RadioGroup
+                            onValueChange={(e) =>
+                              labelSelectHandler(book.id, e)
+                            }
+                            className="grid-flow-col"
+                            defaultValue={book.label ? "label" : "no label"}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="label" id="label" />
+                              <Label
+                                className="text-nowrap"
+                                htmlFor="option-one"
+                              >
+                                Label
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="no label" id="no label" />
+                              <Label
+                                className="text-nowrap"
+                                htmlFor="option-two"
+                              >
+                                No Label
+                              </Label>
+                            </div>
+                          </RadioGroup>
+                          <div className="flex w-full justify-between">
+                            <div
+                              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border"
+                              onClick={() => {
+                                setBooks((prevBooks) =>
+                                  prevBooks.map((prevBook) =>
+                                    prevBook.id === book.id
+                                      ? { ...prevBook, coverImage: "" }
+                                      : prevBook,
+                                  ),
+                                );
+                              }}
+                            >
+                              <CircleOff className=" h-4 w-4" />
+                            </div>
+                            {defaultImages.map((image) => (
+                              <div
+                                key={image}
+                                className={cn(
+                                  book.coverImage === image && "bg-slate-300",
+                                  "h-10 w-10 cursor-pointer rounded-md border p-[1px] hover:scale-105",
+                                )}
+                                onClick={() =>
+                                  imageSelectHandler(book.id, image)
+                                }
+                              >
+                                <Image
+                                  className="h-full w-full rounded-md object-cover"
+                                  src={image}
+                                  width={100}
+                                  height={100}
+                                  alt={image}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex flex-col gap-3">
+                            <p className="text-sm">Upload a cover image:</p>
+
+                            <div className="flex w-full items-start justify-between">
+                              <UploadButton
+                                className="ut-button:shadown-md ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:bg-zinc-800 ut-button:dark:text-white ut-button:hover:dark:bg-zinc-800/80"
+                                endpoint="imageUploader"
+                                onClientUploadComplete={(res) => {
+                                  setBooks((prevBooks) => {
+                                    return prevBooks.map((prevBook) =>
+                                      prevBook.id === book.id
+                                        ? {
+                                            ...prevBook,
+                                            uploadedImage: res[0].url,
+                                          }
+                                        : prevBook,
+                                    );
+                                  });
+                                  toast({
+                                    description: "Image Upload Successful",
+                                  });
+                                }}
+                                onUploadError={(error: Error) => {
+                                  // Do something with the error.
+                                  toast({
+                                    description: "Image Upload Error",
+                                  });
+                                }}
+                              />
+                              <div className="flex flex-col items-center justify-center gap-2">
+                                <div
+                                  className={cn(
+                                    book.coverImage === book.uploadedImage &&
+                                      book.uploadedImage &&
+                                      "bg-slate-300",
+                                    "h-10 w-10 cursor-pointer rounded-md border-2 p-[1px] hover:scale-105",
+                                  )}
+                                  onClick={() => {
+                                    book.uploadedImage &&
+                                      imageSelectHandler(
+                                        book.id,
+                                        book.uploadedImage,
+                                      );
+                                  }}
+                                >
+                                  {book.uploadedImage && (
+                                    <img
+                                      src={book.uploadedImage}
+                                      className="h-full w-full rounded-md"
+                                    />
+                                  )}
+                                </div>
+                                {/* <p className="text-[8px] text-gray-600">
                               Your image
                             </p> */}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              </CarouselItem>
-            ))}
+                </CarouselItem>
+              ))}
             <CarouselItem className="flex w-0 items-center justify-center py-4">
               <div className="flex flex-col items-center gap-6">
                 <p className="text-center text-sm font-semibold">
@@ -436,17 +453,17 @@ export default function Write() {
   );
 }
 
-// export async function getServerSideProps() {
-//   const queryClient = new QueryClient();
+export async function getServerSideProps() {
+  const queryClient = new QueryClient();
 
-//   await queryClient.prefetchQuery({
-//     queryKey: ["books"],
-//     queryFn: getBooks,
-//   });
+  await queryClient.prefetchQuery({
+    queryKey: ["books"],
+    queryFn: getBooks,
+  });
 
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient),
-//     },
-//   };
-// }
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
+}
