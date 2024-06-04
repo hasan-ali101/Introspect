@@ -1,6 +1,6 @@
 export interface IBook {
-  userId: number;
-  id: number;
+  userId: string;
+  id: string;
   title: string;
   color: string;
   label: boolean;

@@ -25,16 +25,16 @@ export default function App({ Component, pageProps }: AppProps) {
       }),
   );
   return (
-    <QueryClientProvider client={queryClient}>
-      <HydrationBoundary state={pageProps.dehydratedState}>
-        <ClerkProvider>
+    <ClerkProvider>
+      <QueryClientProvider client={queryClient}>
+        <HydrationBoundary state={pageProps.dehydratedState}>
           <ThemeProvider attribute="class">
             <Nav />
             <Component {...pageProps} />
             <Toaster />
           </ThemeProvider>
-        </ClerkProvider>
-      </HydrationBoundary>
-    </QueryClientProvider>
+        </HydrationBoundary>
+      </QueryClientProvider>
+    </ClerkProvider>
   );
 }

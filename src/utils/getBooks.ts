@@ -1,19 +1,14 @@
-import axios from "axios";
-
-const getBooks = async () => {
+export const getBooks = async () => {
   try {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/books`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    console.log("Axios response:", response.data);
-    return response.data;
+    const response = await fetch("/api/books");
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
   } catch (error) {
-    console.error("Axios error:", error);
+    console.error("Fetch error:", error);
   }
 };
 

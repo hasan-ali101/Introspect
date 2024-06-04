@@ -22,41 +22,12 @@ import { Pencil } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import getBooks from "@/utils/getBooks";
+import { useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { postBooks } from "@/utils/postBooks";
+import { v4 as uuidv4 } from "uuid";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const dummyBooks: IBook[] = [
-  {
-    id: 1,
-    userId: 1,
-    title: "My 2024 meditation journal",
-    color: "bg-red-300",
-    label: true,
-    notebook: false,
-    coverImage: "/wave.jpeg",
-    uploadedImage: "",
-  },
-  {
-    id: 2,
-    userId: 1,
-    title: "A book of poems",
-    color: "bg-emerald-300",
-    label: false,
-    notebook: true,
-    coverImage: "/flowers.webp",
-    uploadedImage: "",
-  },
-  {
-    id: 3,
-    userId: 1,
-    title: "A third dummy book",
-    color: "bg-red-300",
-    label: true,
-    notebook: false,
-    coverImage: "/spaces.jpeg",
-    uploadedImage: "",
-  },
-];
 
 const defaultColors = [
   "bg-red-300",
@@ -74,17 +45,25 @@ const defaultImages = [
 ];
 
 export default function Write() {
-  const { data } = useQuery({ queryKey: ["books"], queryFn: getBooks });
-  console.log("Data:", data);
-
+  const { data, isError } = useQuery({
+    queryKey: ["books"],
+    queryFn: getBooks,
+  });
   const [isEditing, setIsEditing] = useState(false);
-  const [books, setBooks] = useState<IBook[]>(data || []);
+  const [books, setBooks] = useState<IBook[]>([]);
   const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
     undefined,
   );
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
     undefined,
   );
+  const { userId } = useAuth();
+
+  useEffect(() => {
+    if (data) {
+      setBooks(data);
+    }
+  }, [data]);
 
   const { toast } = useToast();
 
@@ -122,20 +101,32 @@ export default function Write() {
     setBooks((prevBooks) => [
       ...prevBooks,
       {
-        id: prevBooks.length + 1, // Need to gen a unique id
-        userId: 1,
+        id: uuidv4(),
+        userId: userId!,
         title: "New Book Title",
         color: "bg-red-300",
         label: true,
-        text: "text-black",
         notebook: false,
         coverImage: "",
         uploadedImage: "",
       },
     ]);
-    setSelectedBook(books[books.length - 1]);
     setIsEditing(true);
     carouselApi?.scrollTo(books.length);
+  };
+
+  useEffect(() => {
+    setSelectedBook(books[books.length - 1]);
+  }, [addBookHandler]); // ensures the book is selected after it has been addded
+
+  const saveChanges = () => {
+    if (selectedBook?.id.startsWith("book")) {
+      console.log("editing existing book");
+    } else {
+      console.log("adding new book");
+      postBooks(selectedBook!);
+    }
+    isEditing && setIsEditing(false);
   };
 
   return (
@@ -150,6 +141,8 @@ export default function Write() {
       </div>
 
       <div className="flex flex-col items-center">
+        {isError && <p>Error getting your books!</p>}
+        {books.length === 0 && <p>No books found!</p>}
         <Carousel setApi={setCarouselApi} drag={!isEditing}>
           <CarouselContent className="mb-6">
             {books &&
@@ -439,7 +432,15 @@ export default function Write() {
           {!isEditing && <CarouselNext />}
           {!isEditing && <CarouselPrevious />}
         </Carousel>
-        {isEditing && <Button>Save changes</Button>}
+        {isEditing && (
+          <Button
+            onClick={() => {
+              saveChanges();
+            }}
+          >
+            Save changes
+          </Button>
+        )}
       </div>
 
       {!isEditing && books.length > 0 && (

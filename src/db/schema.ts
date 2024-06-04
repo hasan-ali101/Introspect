@@ -1,8 +1,8 @@
 import { integer, text, boolean, pgTable } from "drizzle-orm/pg-core";
 
 export const books = pgTable("books", {
-  id: integer("id").primaryKey().notNull(),
-  userId: integer("userId").notNull(),
+  id: text("id").primaryKey().notNull().unique(),
+  userId: text("userId").notNull(),
   title: text("title"),
   color: text("color"),
   label: boolean("label"),
