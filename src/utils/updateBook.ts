@@ -1,9 +1,9 @@
 import type { IBook } from "@/types/book";
 
-export const postBooks = async (book: IBook) => {
+export const updateBook = async (book: IBook, id: string) => {
   try {
-    const response = await fetch("/api/books", {
-      method: "POST",
+    const response = await fetch(`/api/books/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -13,7 +13,6 @@ export const postBooks = async (book: IBook) => {
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-
     const data = await response.json();
     return data;
   } catch (error) {
@@ -21,4 +20,4 @@ export const postBooks = async (book: IBook) => {
   }
 };
 
-export default postBooks;
+export default updateBook;

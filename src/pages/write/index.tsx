@@ -20,11 +20,17 @@ import Image from "next/image";
 import { UploadButton } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import {
+  dehydrate,
+  QueryClient,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import getBooks from "@/utils/getBooks";
 import { useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { postBooks } from "@/utils/postBooks";
+import { addNewBook } from "@/utils/addNewBook";
+import { updateBook } from "@/utils/updateBook";
 import { v4 as uuidv4 } from "uuid";
 import { SignedIn, SignInButton, SignedOut } from "@clerk/nextjs";
 
@@ -34,33 +40,32 @@ const defaultColors = [
   "bg-red-300",
   "bg-blue-300",
   "bg-purple-300",
-  "bg-emerald-300",
+  "bg-green-300",
   "bg-orange-300",
 ];
 
 const defaultImages = [
   "/wave.jpeg",
-  "/spaces.jpeg",
+  "/stars.jpeg",
   "/venus.jpeg",
   "/flowers.webp",
 ];
 
 export default function Write() {
+  const queryClient = useQueryClient();
   const { data, isError } = useQuery({
     queryKey: ["books"],
     queryFn: getBooks,
   });
   const [isEditing, setIsEditing] = useState(false);
   const [books, setBooks] = useState<IBook[]>([]);
-  const [selectedBook, setSelectedBook] = useState<IBook | undefined>(
-    undefined,
-  );
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
     undefined,
   );
   const { userId } = useAuth();
 
   useEffect(() => {
+    console.log("data", data);
     if (data) {
       setBooks(data);
     }
@@ -105,7 +110,7 @@ export default function Write() {
         id: uuidv4(),
         userId: userId!,
         title: "New Book Title",
-        color: "bg-red-300",
+        color: "bg-purple-300",
         label: true,
         notebook: false,
         coverImage: "",
@@ -116,26 +121,22 @@ export default function Write() {
     carouselApi?.scrollTo(books.length);
   };
 
-  useEffect(() => {
-    setSelectedBook(books[books.length - 1]);
-  }, [addBookHandler]); // ensures the book is selected after it has been addded
-
-  const saveChanges = () => {
-    if (selectedBook?.id.startsWith("book")) {
-      console.log("editing existing book");
+  const saveChanges = (book: IBook) => {
+    if (book.id.startsWith("book")) {
+      console.log("updating existing book");
+      updateBook(book, book.id);
     } else {
-      console.log("adding new book");
-      postBooks(selectedBook!);
+      addNewBook(book);
     }
     isEditing && setIsEditing(false);
   };
 
   return (
     <main
-      className={`dark:to-dark-primary relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10  pb-10 dark:from-[#7e80e7] lg:justify-center ${inter.className}`}
+      className={`dark:to-dark-primary relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10  pb-10 dark:from-[#7e80e7] 2xl:justify-center ${inter.className}`}
     >
       <div
-        className="md:animate-stars absolute -m-12 h-full w-full opacity-40 transition-opacity sm:-m-10"
+        className="md:animate-stars absolute -m-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10"
         style={{
           backgroundImage: `url("/stars2.png")`,
           backgroundSize: "cover",
@@ -144,7 +145,7 @@ export default function Write() {
         <div className="animate-shooting-star md:animate-shooting-star-slow absolute z-0 h-1 w-1 rounded-full bg-white"></div>
       </div>
 
-      <div className="my-6 flex w-full flex-col gap-1 py-4 text-center">
+      <div className="mt-6 flex w-full flex-col gap-1 py-4 text-center">
         <h1 className="text-xl font-semibold">Your Library</h1>
         <p className=" text-gray-500 dark:text-indigo-200">
           Write your thoughts, ideas, and stories here.
@@ -153,9 +154,9 @@ export default function Write() {
       <SignedIn>
         <div className="flex flex-col items-center">
           {isError && <p>Error getting your books!</p>}
-          {books.length === 0 && !isError && <p>No books found!</p>}
+          {/* {books.length === 0 && !isError && <p>No books found!</p>} */}
           <Carousel setApi={setCarouselApi} drag={!isEditing}>
-            <CarouselContent className="mb-6 ">
+            <CarouselContent>
               {books &&
                 books.map((book) => (
                   <CarouselItem key={book.id}>
@@ -165,67 +166,79 @@ export default function Write() {
                         "flex flex-col items-center justify-center md:flex-row",
                       )}
                     >
-                      <div
-                        className={cn(
-                          !isEditing && "py-10 md:min-w-80",
-                          " dark:bg-dark-tertiary mx-4 flex min-w-56 cursor-pointer flex-col items-center gap-6 rounded-3xl border px-4 py-8  shadow-sm md:mx-0",
-                        )}
-                      >
-                        {!isEditing && (
-                          <p className="px-4 text-center text-sm font-semibold md:text-lg">
-                            {book.title}
-                          </p>
-                        )}
+                      <div className="flex flex-col gap-8">
+                        <div
+                          className={cn(
+                            !isEditing && "py-10 md:min-w-80",
+                            " dark:bg-dark-tertiary mx-4 flex min-w-56 cursor-pointer flex-col items-center gap-6 rounded-3xl border px-4 py-8  shadow-sm md:mx-0",
+                          )}
+                        >
+                          {!isEditing && (
+                            <p className="px-4 text-center text-sm font-semibold md:text-lg">
+                              {book.title}
+                            </p>
+                          )}
+                          {isEditing && (
+                            <div className="relative mx-4">
+                              <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
+                              <input
+                                type="text"
+                                className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100  dark:bg-transparent"
+                                value={book.title}
+                                onChange={(e) =>
+                                  setBooks((prevBooks) =>
+                                    prevBooks.map((prevBook) =>
+                                      prevBook.id === book.id
+                                        ? {
+                                            ...prevBook,
+                                            title: e.target.value,
+                                          }
+                                        : prevBook,
+                                    ),
+                                  )
+                                }
+                              />
+                            </div>
+                          )}
+                          <Book
+                            userId={book.userId}
+                            id={book.id}
+                            title={book.title}
+                            color={book.color}
+                            label={book.label}
+                            notebook={book.notebook}
+                            editMode={isEditing}
+                            coverImage={book.coverImage}
+                          />
+                          {!isEditing && (
+                            <>
+                              <p
+                                className="cursor-pointer text-sm  underline"
+                                onClick={() => {
+                                  setIsEditing(true);
+                                }}
+                              >
+                                Edit Title/Cover
+                              </p>
+                              <Button className="text-xs md:text-sm">
+                                Continue Writing
+                              </Button>
+                            </>
+                          )}
+                        </div>
                         {isEditing && (
-                          <div className="relative mx-4">
-                            <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
-                            <input
-                              type="text"
-                              className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100  dark:bg-transparent"
-                              value={book.title}
-                              onChange={(e) =>
-                                setBooks((prevBooks) =>
-                                  prevBooks.map((prevBook) =>
-                                    prevBook.id === book.id
-                                      ? {
-                                          ...prevBook,
-                                          title: e.target.value,
-                                        }
-                                      : prevBook,
-                                  ),
-                                )
-                              }
-                            />
-                          </div>
-                        )}
-                        <Book
-                          userId={book.userId}
-                          id={book.id}
-                          title={book.title}
-                          color={book.color}
-                          label={book.label}
-                          notebook={book.notebook}
-                          editMode={isEditing}
-                          coverImage={book.coverImage}
-                        />
-                        {!isEditing && (
-                          <>
-                            <p
-                              className="cursor-pointer text-sm  underline"
+                          <div className="z-10 -mt-4 flex justify-center">
+                            <Button
+                              className="w-40"
                               onClick={() => {
-                                setIsEditing(true);
-                                setSelectedBook(book);
+                                saveChanges(book);
                               }}
                             >
-                              Edit Title/Cover
-                            </p>
-                            <Button className="text-xs md:text-sm">
-                              Continue Writing
+                              Save Book
                             </Button>
-                          </>
+                          </div>
                         )}
                       </div>
-
                       <div
                         id="editor"
                         className={cn(
@@ -241,12 +254,16 @@ export default function Write() {
                             !isEditing ? "hidden" : "flex",
                             "absolute right-2 top-2 cursor-pointer",
                           )}
-                          onClick={() => (
-                            setIsEditing(false), setSelectedBook(undefined)
-                          )}
+                          onClick={() => {
+                            setIsEditing(false),
+                              queryClient.invalidateQueries({
+                                queryKey: ["books"],
+                              });
+                            setBooks(data);
+                          }}
                         />
                         {isEditing && (
-                          <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
+                          <div className="flex h-full min-h-64 w-full flex-col gap-6 px-8 pb-4 pt-10">
                             <RadioGroup
                               onValueChange={(e) =>
                                 notebookSelectHandler(book.id, e)
@@ -373,7 +390,7 @@ export default function Write() {
 
                               <div className="flex w-full items-start justify-between">
                                 <UploadButton
-                                  className="ut-button:shadown-md ut-button:dark:bg-dark-primary ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:text-white ut-button:hover:dark:bg-zinc-800/80 dark:ut-allowed-content:text-gray-300"
+                                  className="ut-button:shadown-md ut-button:hover:dark:bg-dark-secondary ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:bg-transparent ut-button:dark:text-white dark:ut-allowed-content:text-gray-300"
                                   endpoint="imageUploader"
                                   onClientUploadComplete={(res) => {
                                     setBooks((prevBooks) => {
@@ -402,8 +419,8 @@ export default function Write() {
                                     className={cn(
                                       book.coverImage === book.uploadedImage &&
                                         book.uploadedImage &&
-                                        "bg-slate-300",
-                                      "h-10 w-10 cursor-pointer rounded-md border-2 p-[1px] hover:scale-105",
+                                        "bg-slate-300 hover:scale-105",
+                                      "h-10 w-10 cursor-pointer rounded-md border-2 p-[1px]",
                                     )}
                                     onClick={() => {
                                       book.uploadedImage &&
@@ -420,9 +437,6 @@ export default function Write() {
                                       />
                                     )}
                                   </div>
-                                  {/* <p className="text-[8px] text-gray-600">
-                              Your image
-                            </p> */}
                                 </div>
                               </div>
                             </div>
@@ -459,15 +473,6 @@ export default function Write() {
               <CarouselPrevious className="dark:bg-dark-tertiary hover:dark:bg-dark-tertiary/90 transition-transform dark:border-white hover:dark:scale-105" />
             )}
           </Carousel>
-          {isEditing && (
-            <Button
-              onClick={() => {
-                saveChanges();
-              }}
-            >
-              Save changes
-            </Button>
-          )}
         </div>
       </SignedIn>
       <SignedOut>
@@ -480,7 +485,7 @@ export default function Write() {
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button
             variant={"secondary"}
-            className="border transition-transform dark:border-white dark:bg-transparent hover:dark:scale-105 hover:dark:bg-transparent"
+            className="z-10 border transition-transform dark:border-white dark:bg-transparent hover:dark:scale-105 hover:dark:bg-transparent"
             onClick={addBookHandler}
           >
             + Add a new book
