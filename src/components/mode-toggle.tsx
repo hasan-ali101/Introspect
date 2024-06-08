@@ -9,8 +9,7 @@ export function ModeToggle() {
 
   return (
     <Button
-      className="h-full w-full"
-      variant="outline"
+      className="h-full w-full border border-white dark:bg-transparent dark:text-white"
       size="icon"
       onClick={() => (theme === "dark" ? setTheme("light") : setTheme("dark"))}
     >

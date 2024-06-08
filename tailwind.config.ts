@@ -19,6 +19,11 @@ const config = withUt({
       },
     },
     extend: {
+      colors: {
+        "dark-primary": "#38396F",
+        "dark-secondary": "#7e80e7",
+        "dark-tertiary": "#696aca80",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -28,10 +33,22 @@ const config = withUt({
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        stars: {
+          "0%": { opacity: "0.1" },
+          "50%": { opacity: "0.9" },
+          "100%": { opacity: "0.1" },
+        },
+        "shooting-star": {
+          "0%": { transform: "translate(0, 100vh)" },
+          "100%": { transform: "translate(100vw, -100vh)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        stars: "stars 2.5s infinite ease-in-out",
+        "shooting-star": "shooting-star 6s infinite",
+        "shooting-star-slow": "shooting-star 10s infinite",
       },
     },
   },
