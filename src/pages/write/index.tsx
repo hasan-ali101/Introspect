@@ -136,13 +136,13 @@ export default function Write() {
       className={`dark:to-dark-primary relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10  pb-10 dark:from-[#7e80e7] 2xl:justify-center ${inter.className}`}
     >
       <div
-        className="md:animate-stars absolute -m-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10"
+        className="md:animate-stars absolute z-0 -mt-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10 md:m-0"
         style={{
           backgroundImage: `url("/stars2.png")`,
           backgroundSize: "cover",
         }}
       >
-        <div className="animate-shooting-star md:animate-shooting-star-slow absolute z-0 h-1 w-1 rounded-full bg-white"></div>
+        <div className="animate-shooting-star md:animate-shooting-star-slow h-1 w-1 rounded-full bg-white"></div>
       </div>
 
       <div className="mt-6 flex w-full flex-col gap-1 py-4 text-center">
@@ -227,7 +227,7 @@ export default function Write() {
                           )}
                         </div>
                         {isEditing && (
-                          <div className="z-10 -mt-4 flex justify-center">
+                          <div className="-mt-4 flex justify-center">
                             <Button
                               className="w-40"
                               onClick={() => {
@@ -474,24 +474,23 @@ export default function Write() {
             )}
           </Carousel>
         </div>
+        {!isEditing && books.length > 0 && (
+          <div className="z-10 mt-4 flex items-center justify-center gap-2">
+            <Button
+              variant={"secondary"}
+              className="border transition-transform dark:border-white dark:bg-transparent hover:dark:scale-105 hover:dark:bg-transparent"
+              onClick={addBookHandler}
+            >
+              + Add a new book
+            </Button>
+          </div>
+        )}
       </SignedIn>
       <SignedOut>
-        <div className="flex items-center justify-center gap-4">
+        <div className="mt-12 flex h-full items-center justify-center underline">
           <SignInButton />
         </div>
       </SignedOut>
-
-      {!isEditing && books.length > 0 && (
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <Button
-            variant={"secondary"}
-            className="z-10 border transition-transform dark:border-white dark:bg-transparent hover:dark:scale-105 hover:dark:bg-transparent"
-            onClick={addBookHandler}
-          >
-            + Add a new book
-          </Button>
-        </div>
-      )}
     </main>
   );
 }
