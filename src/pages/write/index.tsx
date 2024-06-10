@@ -163,8 +163,8 @@ export default function Write() {
                   <CarouselItem key={book.id}>
                     <div
                       className={cn(
-                        isEditing ? "gap-10 p-4" : "gap-0",
-                        "my-4 flex flex-col items-center justify-center md:flex-row",
+                        isEditing ? "-my-2 gap-10 p-4" : "my-2 gap-0",
+                        "flex flex-col items-center justify-center md:flex-row",
                       )}
                     >
                       <div
