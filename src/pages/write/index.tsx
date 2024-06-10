@@ -133,16 +133,17 @@ export default function Write() {
 
   return (
     <main
-      className={`dark:to-dark-primary relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10  pb-10 dark:from-[#7e80e7] 2xl:justify-center ${inter.className}`}
+      className={` relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10 py-10 dark:from-[#7e80e7] dark:to-dark-primary ${inter.className}`}
     >
       <div
-        className="md:animate-stars absolute z-0 -mt-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10 md:m-0"
+        className="absolute z-0 -mt-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10 md:animate-stars"
         style={{
           backgroundImage: `url("/stars2.png")`,
           backgroundSize: "cover",
         }}
       >
-        <div className="animate-shooting-star md:animate-shooting-star-slow h-1 w-1 rounded-full bg-white"></div>
+        <div className="h-1 w-1 animate-shooting-star rounded-full bg-white md:animate-shooting-star-slow"></div>
+        <div className="h-1 w-1 animate-shooting-star-2 rounded-full bg-white"></div>
       </div>
 
       <div className="mt-6 flex w-full flex-col gap-1 py-4 text-center">
@@ -170,7 +171,7 @@ export default function Write() {
                         <div
                           className={cn(
                             !isEditing && "py-10 md:min-w-80",
-                            " dark:bg-dark-tertiary mx-4 flex min-w-56 cursor-pointer flex-col items-center gap-6 rounded-3xl border px-4 py-8  shadow-sm md:mx-0",
+                            " mx-4 flex min-w-56 cursor-pointer flex-col items-center gap-6 rounded-3xl border px-4 py-8 shadow-sm  dark:bg-dark-tertiary md:mx-0",
                           )}
                         >
                           {!isEditing && (
@@ -183,6 +184,7 @@ export default function Write() {
                               <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
                               <input
                                 type="text"
+                                placeholder="Book Title"
                                 className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100  dark:bg-transparent"
                                 value={book.title}
                                 onChange={(e) =>
@@ -234,7 +236,7 @@ export default function Write() {
                                 saveChanges(book);
                               }}
                             >
-                              Save Book
+                              Save
                             </Button>
                           </div>
                         )}
@@ -245,7 +247,7 @@ export default function Write() {
                           isEditing
                             ? "h-full w-80 md:w-80"
                             : "w-0 border-transparent",
-                          "dark:bg-dark-tertiary relative overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out md:h-full",
+                          "relative overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out dark:bg-dark-tertiary md:h-full",
                         )}
                       >
                         <CircleX
@@ -260,6 +262,9 @@ export default function Write() {
                                 queryKey: ["books"],
                               });
                             setBooks(data);
+                            carouselApi?.scrollTo(
+                              carouselApi?.slidesInView()[0],
+                            );
                           }}
                         />
                         {isEditing && (
@@ -390,7 +395,7 @@ export default function Write() {
 
                               <div className="flex w-full items-start justify-between">
                                 <UploadButton
-                                  className="ut-button:shadown-md ut-button:hover:dark:bg-dark-secondary ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:bg-transparent ut-button:dark:text-white dark:ut-allowed-content:text-gray-300"
+                                  className="ut-button:shadown-md ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:bg-transparent ut-button:dark:text-white ut-button:hover:dark:bg-dark-secondary dark:ut-allowed-content:text-gray-300"
                                   endpoint="imageUploader"
                                   onClientUploadComplete={(res) => {
                                     setBooks((prevBooks) => {
@@ -467,10 +472,10 @@ export default function Write() {
               </CarouselItem>
             </CarouselContent>
             {!isEditing && (
-              <CarouselNext className="dark:bg-dark-tertiary hover:dark:bg-dark-tertiary/90 transition-transform dark:border-white hover:dark:scale-105" />
+              <CarouselNext className="transition-transform dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
             {!isEditing && (
-              <CarouselPrevious className="dark:bg-dark-tertiary hover:dark:bg-dark-tertiary/90 transition-transform dark:border-white hover:dark:scale-105" />
+              <CarouselPrevious className="transition-transform dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
           </Carousel>
         </div>
@@ -487,7 +492,7 @@ export default function Write() {
         )}
       </SignedIn>
       <SignedOut>
-        <div className="mt-12 flex h-full items-center justify-center underline">
+        <div className="z-10 mt-12 flex h-full items-center justify-center underline">
           <SignInButton />
         </div>
       </SignedOut>

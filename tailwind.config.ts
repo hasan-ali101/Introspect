@@ -42,6 +42,14 @@ const config = withUt({
           "0%": { transform: "translate(0, 100vh)" },
           "100%": { transform: "translate(100vw, -100vh)" },
         },
+        "shooting-star-2": {
+          "0%": { transform: "translate(100vw, 20vh)" },
+          "10%": { transform: "translate(100vw, 20vh)" },
+          "35%": { transform: "translate(0, 60vh)" },
+          "100%": {
+            transform: "translate(10vw, 80vh)",
+          } /* Keep the last frame the same to create a pause effect */,
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -49,6 +57,7 @@ const config = withUt({
         stars: "stars 2.5s infinite ease-in-out",
         "shooting-star": "shooting-star 6s infinite",
         "shooting-star-slow": "shooting-star 10s infinite",
+        "shooting-star-2": "shooting-star-2 20s linear infinite",
       },
     },
   },
