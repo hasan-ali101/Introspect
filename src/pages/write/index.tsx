@@ -115,6 +115,7 @@ export default function Write() {
         notebook: false,
         coverImage: "",
         uploadedImage: "",
+        pin: 1234,
       },
     ]);
     setIsEditing(true);
@@ -133,7 +134,7 @@ export default function Write() {
 
   return (
     <main
-      className={` relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10 py-10 dark:from-[#7e80e7] dark:to-dark-primary ${inter.className}`}
+      className={` relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10 pb-8 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`}
     >
       <div
         className="absolute z-0 -mt-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10 md:animate-stars"
@@ -153,36 +154,45 @@ export default function Write() {
         </p>
       </div>
       <SignedIn>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center ">
           {isError && <p>Error getting your books!</p>}
-          {/* {books.length === 0 && !isError && <p>No books found!</p>} */}
           <Carousel setApi={setCarouselApi} drag={!isEditing}>
-            <CarouselContent>
+            <CarouselContent isEditing={isEditing}>
               {books &&
                 books.map((book) => (
                   <CarouselItem key={book.id}>
                     <div
                       className={cn(
                         isEditing ? "gap-10 p-4" : "gap-0",
-                        "flex flex-col items-center justify-center md:flex-row",
+                        "my-4 flex flex-col items-center justify-center md:flex-row",
                       )}
                     >
-                      <div className="flex flex-col gap-8">
+                      <div
+                        className={cn(
+                          !isEditing && " transition-transform hover:scale-105",
+                          "flex cursor-pointer flex-col gap-8",
+                        )}
+                      >
                         <div
                           className={cn(
-                            !isEditing && "py-10 md:min-w-80",
-                            " mx-4 flex min-w-56 cursor-pointer flex-col items-center gap-6 rounded-3xl border px-4 py-8 shadow-sm  dark:bg-dark-tertiary md:mx-0",
+                            !isEditing && "py-2 md:min-w-80",
+                            " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-10 shadow-sm dark:bg-dark-tertiary md:mx-0",
                           )}
                         >
                           {!isEditing && (
-                            <p className="px-4 text-center text-sm font-semibold md:text-lg">
-                              {book.title}
-                            </p>
+                            <Pencil
+                              onClick={() => {
+                                setIsEditing(true);
+                              }}
+                              className="absolute right-3 top-3 rounded-md border p-1 dark:bg-dark-tertiary dark:hover:bg-dark-tertiary/90 md:right-4 md:top-4 md:h-8 md:w-8"
+                            />
                           )}
+
                           {isEditing && (
-                            <div className="relative mx-4">
+                            <div className="relative mx-4 ">
                               <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
                               <input
+                                maxLength={50}
                                 type="text"
                                 placeholder="Book Title"
                                 className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100  dark:bg-transparent"
@@ -211,25 +221,18 @@ export default function Write() {
                             notebook={book.notebook}
                             editMode={isEditing}
                             coverImage={book.coverImage}
+                            pin={book.pin}
                           />
                           {!isEditing && (
-                            <>
-                              <p
-                                className="cursor-pointer text-sm  underline"
-                                onClick={() => {
-                                  setIsEditing(true);
-                                }}
-                              >
-                                Edit Title/Cover
+                            <div className="flex w-full justify-center border-y-[0.5px] dark:border-gray-200">
+                              <p className="max-w-40 px-4 py-2 text-center text-sm font-semibold md:max-w-64 md:text-lg">
+                                {book.title}
                               </p>
-                              <Button className="text-xs md:text-sm">
-                                Continue Writing
-                              </Button>
-                            </>
+                            </div>
                           )}
                         </div>
                         {isEditing && (
-                          <div className="-mt-4 flex justify-center">
+                          <div className="-mt-4 flex flex-col items-center justify-center gap-4">
                             <Button
                               className="w-40"
                               onClick={() => {
@@ -268,7 +271,7 @@ export default function Write() {
                           }}
                         />
                         {isEditing && (
-                          <div className="flex h-full min-h-64 w-full flex-col gap-6 px-8 pb-4 pt-10">
+                          <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
                             <RadioGroup
                               onValueChange={(e) =>
                                 notebookSelectHandler(book.id, e)
@@ -478,18 +481,18 @@ export default function Write() {
               <CarouselPrevious className="transition-transform dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
           </Carousel>
+          {!isEditing && books.length > 0 && (
+            <div className="z-10 flex items-center justify-center gap-2">
+              <Button
+                variant={"secondary"}
+                className="border transition-transform dark:border-white dark:bg-transparent hover:dark:scale-105 hover:dark:bg-transparent"
+                onClick={addBookHandler}
+              >
+                + Add a new book
+              </Button>
+            </div>
+          )}
         </div>
-        {!isEditing && books.length > 0 && (
-          <div className="z-10 mt-4 flex items-center justify-center gap-2">
-            <Button
-              variant={"secondary"}
-              className="border transition-transform dark:border-white dark:bg-transparent hover:dark:scale-105 hover:dark:bg-transparent"
-              onClick={addBookHandler}
-            >
-              + Add a new book
-            </Button>
-          </div>
-        )}
       </SignedIn>
       <SignedOut>
         <div className="z-10 mt-12 flex h-full items-center justify-center underline">

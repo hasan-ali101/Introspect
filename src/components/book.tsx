@@ -20,7 +20,7 @@ const Book = ({
       <div
         className={cn(
           // !editMode && "hover:scale-105",
-          "relative  w-28 transition-all",
+          "relative  w-28 cursor-pointer transition-all",
         )}
       >
         <Image

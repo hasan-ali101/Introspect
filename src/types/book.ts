@@ -7,4 +7,5 @@ export interface IBook {
   notebook: boolean;
   coverImage?: string;
   uploadedImage?: string;
+  pin: number;
 }
