@@ -169,7 +169,8 @@ export default function Write() {
                     >
                       <div
                         className={cn(
-                          !isEditing && " transition-transform hover:scale-105",
+                          !isEditing &&
+                            " shadow-lg transition-transform hover:scale-105",
                           "flex cursor-pointer flex-col gap-8",
                         )}
                       >
@@ -225,7 +226,7 @@ export default function Write() {
                           />
                           {!isEditing && (
                             <div className="flex w-full justify-center border-y-[0.5px] dark:border-gray-200">
-                              <p className="max-w-40 px-4 py-2 text-center text-sm font-semibold md:max-w-64 md:text-lg">
+                              <p className="line-clamp-2 max-w-40 px-4 py-[7px] text-center text-sm font-semibold md:max-w-64 md:text-lg">
                                 {book.title}
                               </p>
                             </div>
@@ -250,7 +251,7 @@ export default function Write() {
                           isEditing
                             ? "h-full w-80 md:w-80"
                             : "w-0 border-transparent",
-                          "relative overflow-hidden rounded-xl border-2 transition-all duration-300 ease-out dark:bg-dark-tertiary md:h-full",
+                          "relative overflow-hidden rounded-xl border-2 transition-all duration-500 dark:bg-dark-tertiary md:h-full",
                         )}
                       >
                         <CircleX
@@ -318,7 +319,7 @@ export default function Write() {
                                 >
                                   <div
                                     className={cn(
-                                      "h-8 w-8 cursor-pointer rounded-full hover:scale-105",
+                                      "h-8 w-8 cursor-pointer rounded-full hover:scale-105 ",
                                       color,
                                     )}
                                     onClick={() =>
@@ -482,10 +483,10 @@ export default function Write() {
             )}
           </Carousel>
           {!isEditing && books.length > 0 && (
-            <div className="z-10 flex items-center justify-center gap-2">
+            <div className="z-10 mt-2 flex items-center justify-center gap-2">
               <Button
                 variant={"secondary"}
-                className="border transition-transform dark:border-white dark:bg-transparent hover:dark:scale-105 hover:dark:bg-transparent"
+                className="border transition-transform dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
                 onClick={addBookHandler}
               >
                 + Add a new book

@@ -18,7 +18,7 @@ import Link from "next/link";
 export default function Nav() {
   return (
     <div className="dark:bg-dark-primary">
-      <div className="flex h-16 w-full items-center justify-between border-b-2 border-black px-2 py-8 drop-shadow-2xl dark:border-white dark:bg-dark-primary md:p-10">
+      <div className="flex h-16 w-full items-center justify-between border-b-2 border-black bg-gradient-to-t px-2 py-8 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:p-10">
         <Link
           href="/"
           className="flex items-center gap-2 text-lg md:gap-7 md:text-xl "
@@ -94,8 +94,8 @@ export default function Nav() {
           </Sheet>
         </div>
       </div>
-      <div className="relative h-10 w-full">
-        <div className="absolute z-10 hidden h-10 w-1/2 items-center justify-between border-b-2 border-r border-black pl-6 pr-8 text-sm font-light tracking-wider underline drop-shadow-2xl dark:border-white md:flex lg:px-12 lg:text-sm">
+      <div className="relative h-10 w-full ">
+        <div className="absolute z-10 hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-black bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider underline shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12 lg:text-sm">
           <Link href="/write" className="hover:cursor-pointer">
             Write
           </Link>

@@ -35,7 +35,7 @@ const config = withUt({
         },
         stars: {
           "0%": { opacity: "0.1" },
-          "50%": { opacity: "0.7" },
+          "50%": { opacity: "0.8" },
           "100%": { opacity: "0.1" },
         },
         "shooting-star": {
