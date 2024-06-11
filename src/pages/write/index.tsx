@@ -33,6 +33,8 @@ import { addNewBook } from "@/utils/addNewBook";
 import { updateBook } from "@/utils/updateBook";
 import { v4 as uuidv4 } from "uuid";
 import { SignedIn, SignInButton, SignedOut } from "@clerk/nextjs";
+import Link from "next/link";
+import BackgroundImage from "@/components/background-image";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -138,17 +140,7 @@ export default function Write() {
         `relative flex min-h-[400px] flex-col items-center bg-gradient-to-t px-10 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`,
       )}
     >
-      <div
-        className="absolute z-0 -mt-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10 md:animate-stars"
-        style={{
-          backgroundImage: `url("/stars2.png")`,
-          backgroundSize: "cover",
-        }}
-      >
-        <div className="h-1 w-1 animate-shooting-star rounded-full bg-white md:animate-shooting-star-slow"></div>
-        <div className="h-1 w-1 animate-shooting-star-2 rounded-full bg-white"></div>
-      </div>
-
+      <BackgroundImage />
       <div className="mt-6 flex w-full flex-col gap-1 py-4 text-center">
         <h1 className="text-xl font-semibold">Your Library</h1>
         <p className=" text-gray-500 dark:text-indigo-200">
@@ -175,64 +167,67 @@ export default function Write() {
                           "flex cursor-pointer flex-col gap-8",
                         )}
                       >
-                        <div
-                          className={cn(
-                            !isEditing && "py-2 md:min-w-80",
-                            " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-10 shadow-lg dark:bg-dark-tertiary md:mx-0",
-                          )}
-                        >
-                          {!isEditing && (
-                            <Pencil
-                              onClick={() => {
-                                setIsEditing(true);
-                              }}
-                              className="absolute right-3 top-3 rounded-md border p-1 dark:bg-dark-tertiary dark:hover:bg-dark-tertiary/90 md:right-4 md:top-4 md:h-8 md:w-8"
-                            />
-                          )}
-
-                          {isEditing && (
-                            <div className="relative mx-4 ">
-                              <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
-                              <input
-                                maxLength={50}
-                                type="text"
-                                placeholder="Book Title"
-                                className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100  dark:bg-transparent"
-                                value={book.title}
-                                onChange={(e) =>
-                                  setBooks((prevBooks) =>
-                                    prevBooks.map((prevBook) =>
-                                      prevBook.id === book.id
-                                        ? {
-                                            ...prevBook,
-                                            title: e.target.value,
-                                          }
-                                        : prevBook,
-                                    ),
-                                  )
-                                }
+                        <Link href={`/write/${book.id}`}>
+                          <div
+                            className={cn(
+                              !isEditing && "py-2 md:min-w-80",
+                              " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-10 shadow-lg dark:bg-dark-tertiary md:mx-0",
+                            )}
+                          >
+                            {!isEditing && (
+                              <Pencil
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setIsEditing(true);
+                                }}
+                                className="absolute right-3 top-3 z-10 rounded-md border p-1 dark:bg-dark-tertiary dark:hover:bg-dark-tertiary/90 md:right-4 md:top-4 md:h-8 md:w-8"
                               />
-                            </div>
-                          )}
-                          <Book
-                            userId={book.userId}
-                            id={book.id}
-                            title={book.title}
-                            color={book.color}
-                            label={book.label}
-                            notebook={book.notebook}
-                            editMode={isEditing}
-                            coverImage={book.coverImage}
-                            pin={book.pin}
-                          />
-                          {!isEditing && (
-                            <div className="flex w-full justify-center border-y-[0.5px] dark:border-gray-200">
-                              <p className="line-clamp-2 max-w-40 px-4 py-[7px] text-center text-sm font-semibold md:max-w-64 md:text-lg">
-                                {book.title}
-                              </p>
-                            </div>
-                          )}
-                        </div>
+                            )}
+
+                            {isEditing && (
+                              <div className="relative mx-4 ">
+                                <Pencil className="absolute right-1 top-[6px] h-3 w-3" />
+                                <input
+                                  maxLength={50}
+                                  type="text"
+                                  placeholder="Book Title"
+                                  className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100  dark:bg-transparent"
+                                  value={book.title}
+                                  onChange={(e) =>
+                                    setBooks((prevBooks) =>
+                                      prevBooks.map((prevBook) =>
+                                        prevBook.id === book.id
+                                          ? {
+                                              ...prevBook,
+                                              title: e.target.value,
+                                            }
+                                          : prevBook,
+                                      ),
+                                    )
+                                  }
+                                />
+                              </div>
+                            )}
+                            <Book
+                              userId={book.userId}
+                              id={book.id}
+                              title={book.title}
+                              color={book.color}
+                              label={book.label}
+                              notebook={book.notebook}
+                              editMode={isEditing}
+                              coverImage={book.coverImage}
+                              pin={book.pin}
+                            />
+                            {!isEditing && (
+                              <div className="flex w-full justify-center border-y-[0.5px] dark:border-gray-200">
+                                <p className="line-clamp-2 max-w-40 px-4 py-[7px] text-center text-sm font-semibold md:max-w-64 md:text-lg">
+                                  {book.title}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </Link>
                         {isEditing && (
                           <div className="-mt-4 flex flex-col items-center justify-center gap-4">
                             <Button
