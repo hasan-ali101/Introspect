@@ -134,7 +134,9 @@ export default function Write() {
 
   return (
     <main
-      className={` relative flex min-h-screen flex-col items-center bg-gradient-to-t px-10 pb-8 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`}
+      className={cn(
+        `relative flex min-h-[400px] flex-col items-center bg-gradient-to-t px-10 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`,
+      )}
     >
       <div
         className="absolute z-0 -mt-12 hidden h-full w-full opacity-40 transition-opacity dark:flex sm:-m-10 md:animate-stars"
@@ -169,15 +171,14 @@ export default function Write() {
                     >
                       <div
                         className={cn(
-                          !isEditing &&
-                            " shadow-lg transition-transform hover:scale-105",
+                          !isEditing && "transition-transform hover:scale-105",
                           "flex cursor-pointer flex-col gap-8",
                         )}
                       >
                         <div
                           className={cn(
                             !isEditing && "py-2 md:min-w-80",
-                            " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-10 shadow-sm dark:bg-dark-tertiary md:mx-0",
+                            " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-10 shadow-lg dark:bg-dark-tertiary md:mx-0",
                           )}
                         >
                           {!isEditing && (
@@ -251,7 +252,7 @@ export default function Write() {
                           isEditing
                             ? "h-full w-80 md:w-80"
                             : "w-0 border-transparent",
-                          "relative overflow-hidden rounded-xl border-2 transition-all duration-500 dark:bg-dark-tertiary md:h-full",
+                          "relative overflow-hidden rounded-xl border-2 shadow-lg transition-all duration-500 dark:bg-dark-tertiary md:h-full",
                         )}
                       >
                         <CircleX

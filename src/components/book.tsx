@@ -49,7 +49,7 @@ const Book = ({
                 <div
                   className={cn(
                     notebook && "ml-1",
-                    "flex  min-h-6 w-full items-center justify-center rounded-md bg-white text-center opacity-95",
+                    "flex  min-h-6 w-full items-center justify-center rounded-md bg-white px-[2px] text-center opacity-95",
                   )}
                 >
                   <p className="line-clamp-4 max-h-16 text-[10px] font-semibold text-black">

@@ -14,16 +14,25 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Nav() {
   return (
     <div className="dark:bg-dark-primary">
       <div className="flex h-16 w-full items-center justify-between border-b-2 border-black bg-gradient-to-t px-2 py-8 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:p-10">
         <Link
-          href="/"
+          href="/write"
           className="flex items-center gap-2 text-lg md:gap-7 md:text-xl "
         >
-          <div className="h-10 w-10 rounded-full border-2 border-black dark:border-white md:h-14 md:w-14"></div>
+          <div className="h-14 w-14 rounded-full border-2 p-1">
+            <Image
+              src="/logo-white.png"
+              alt="Introspect Logo"
+              width={60}
+              height={60}
+              className=" mt-1 h-12 w-12"
+            />
+          </div>
           <div>INTROSPECT</div>
         </Link>
         <div className="flex items-center gap-2 sm:gap-4 md:gap-8">
@@ -95,7 +104,7 @@ export default function Nav() {
         </div>
       </div>
       <div className="relative h-10 w-full ">
-        <div className="absolute z-10 hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-black bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider underline shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12 lg:text-sm">
+        <div className="absolute z-10 hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-black bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider underline shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12">
           <Link href="/write" className="hover:cursor-pointer">
             Write
           </Link>

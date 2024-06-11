@@ -10,6 +10,7 @@ import Nav from "@/components/nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/footer";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = React.useState(
@@ -31,6 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <ThemeProvider attribute="class">
             <Nav />
             <Component {...pageProps} />
+            <Footer />
             <Toaster />
           </ThemeProvider>
         </HydrationBoundary>
