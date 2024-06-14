@@ -35,6 +35,8 @@ import { v4 as uuidv4 } from "uuid";
 import { SignedIn, SignInButton, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import BackgroundImage from "@/components/background-image";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { get } from "http";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -55,9 +57,10 @@ const defaultImages = [
 
 export default function Write() {
   const queryClient = useQueryClient();
-  const { data, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["books"],
     queryFn: getBooks,
+    staleTime: Infinity,
   });
   const [isEditing, setIsEditing] = useState(false);
   const [books, setBooks] = useState<IBook[]>([]);
@@ -66,12 +69,14 @@ export default function Write() {
   );
   const { userId } = useAuth();
 
+  console.log("data:", data);
+  console.log("loding: ", isLoading);
+
   useEffect(() => {
-    console.log("data", data);
     if (data) {
       setBooks(data);
     }
-  }, [data]);
+  }, [data]); // this shouldn't be necessary. data should be set in the state initially
 
   const { toast } = useToast();
 
@@ -137,11 +142,11 @@ export default function Write() {
   return (
     <main
       className={cn(
-        `relative flex min-h-[400px] flex-col items-center bg-gradient-to-t px-10 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`,
+        `relative -mb-40 flex min-h-screen flex-col items-center bg-gradient-to-t px-10 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`,
       )}
     >
       <BackgroundImage />
-      <div className="mt-6 flex w-full flex-col gap-1 py-4 text-center">
+      <div className="-mt-6 flex w-full flex-col gap-1 py-4 text-center md:mt-6">
         <h1 className="text-xl font-semibold">Your Library</h1>
         <p className=" text-gray-500 dark:text-indigo-200">
           Write your thoughts, ideas, and stories here.
@@ -149,7 +154,9 @@ export default function Write() {
       </div>
       <SignedIn>
         <div className="flex flex-col items-center ">
-          {isError && <p>Error getting your books!</p>}
+          {isError && (
+            <p className="my-4 font-semibold">Error getting your books!</p>
+          )}
           <Carousel setApi={setCarouselApi} drag={!isEditing}>
             <CarouselContent isEditing={isEditing}>
               {books &&
@@ -261,7 +268,7 @@ export default function Write() {
                               queryClient.invalidateQueries({
                                 queryKey: ["books"],
                               });
-                            setBooks(data);
+                            setBooks(data!);
                             carouselApi?.scrollTo(
                               carouselApi?.slidesInView()[0],
                             );
@@ -500,17 +507,15 @@ export default function Write() {
   );
 }
 
-export async function getServerSideProps() {
-  const queryClient = new QueryClient();
+// export const getServerSideProps = async () => {
+//   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["books"],
-    queryFn: getBooks,
-  });
+//   console.log("prefetching");
+//   await queryClient.prefetchQuery({
+//     queryKey: ["books"],
+//     queryFn: getBooks,
+//     staleTime: Infinity,
+//   });
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-}
+//   return { props: { dehydratedState: dehydrate(queryClient) } };
+// };

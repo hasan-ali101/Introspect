@@ -19,18 +19,18 @@ import Image from "next/image";
 export default function Nav() {
   return (
     <div className="dark:bg-dark-primary">
-      <div className="flex h-16 w-full items-center justify-between border-b-2 border-black bg-gradient-to-t px-2 py-8 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:p-10">
+      <div className="flex h-16 w-full items-center justify-between border-b-2 border-black bg-gradient-to-t px-2 py-10 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:p-10">
         <Link
           href="/write"
-          className="flex items-center gap-2 text-lg md:gap-7 md:text-xl "
+          className="flex items-center gap-2 text-lg md:gap-2 md:text-xl "
         >
-          <div className="h-14 w-14 rounded-full border-2 p-1">
+          <div className="h-14 w-14 rounded-full border-2 pt-1">
             <Image
               src="/logo-white.png"
               alt="Introspect Logo"
               width={60}
               height={60}
-              className=" mt-1 h-12 w-12"
+              className="h-14 w-14"
             />
           </div>
           <div>INTROSPECT</div>

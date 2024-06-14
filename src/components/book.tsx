@@ -38,10 +38,11 @@ const Book = ({
         >
           <div className="relative h-full w-full">
             {coverImage && (
-              <img
+              <Image
                 src={coverImage}
                 alt="cover"
                 className="absolute inset-0 h-full w-full object-cover"
+                fill
               />
             )}
             {label && (
