@@ -1,4 +1,3 @@
-import { Inter } from "next/font/google";
 import Book from "@/components/book";
 import {
   Carousel,
@@ -35,10 +34,11 @@ import { v4 as uuidv4 } from "uuid";
 import { SignedIn, SignInButton, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import BackgroundImage from "@/components/background-image";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import { get } from "http";
+import { Montserrat } from "next/font/google";
+import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
+import { GetServerSideProps } from "next";
 
-const inter = Inter({ subsets: ["latin"] });
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const defaultColors = [
   "bg-red-300",
@@ -57,17 +57,18 @@ const defaultImages = [
 
 export default function Write() {
   const queryClient = useQueryClient();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["books"],
-    queryFn: getBooks,
-    staleTime: Infinity,
-  });
   const [isEditing, setIsEditing] = useState(false);
   const [books, setBooks] = useState<IBook[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
     undefined,
   );
   const { userId } = useAuth();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["books"],
+    queryFn: () => getBooks(userId as string),
+    staleTime: Infinity,
+  });
 
   console.log("data:", data);
   console.log("loding: ", isLoading);
@@ -130,6 +131,7 @@ export default function Write() {
   };
 
   const saveChanges = (book: IBook) => {
+    console.log("saving changes");
     if (book.id.startsWith("book")) {
       console.log("updating existing book");
       updateBook(book, book.id);
@@ -142,13 +144,13 @@ export default function Write() {
   return (
     <main
       className={cn(
-        `relative -mb-40 flex min-h-screen flex-col items-center bg-gradient-to-t px-10 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`,
+        `relative flex min-h-full flex-col items-center bg-gradient-to-t from-[white] to-[#a7bdea] px-10 text-white dark:from-dark-secondary dark:to-dark-primary xl:min-h-screen 2xl:py-10 ${montserrat.className}`,
       )}
     >
       <BackgroundImage />
       <div className="-mt-6 flex w-full flex-col gap-1 py-4 text-center md:mt-6">
         <h1 className="text-xl font-semibold">Your Library</h1>
-        <p className=" text-gray-500 dark:text-indigo-200">
+        <p className=" dark:text-indigo-200">
           Write your thoughts, ideas, and stories here.
         </p>
       </div>
@@ -170,15 +172,19 @@ export default function Write() {
                     >
                       <div
                         className={cn(
-                          !isEditing && "transition-transform hover:scale-105",
-                          "flex cursor-pointer flex-col gap-8",
+                          !isEditing &&
+                            "cursor-pointer transition-transform hover:scale-105",
+                          "flex flex-col gap-8",
                         )}
                       >
-                        <Link href={`/write/${book.id}`}>
+                        <Link
+                          className={cn(isEditing && "pointer-events-none")}
+                          href={`/write/${book.id}`}
+                        >
                           <div
                             className={cn(
                               !isEditing && "py-2 md:min-w-80",
-                              " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border px-4 py-10 shadow-lg dark:bg-dark-tertiary md:mx-0",
+                              " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border bg-[#AECAF7] px-4 py-10  shadow-lg dark:bg-dark-tertiary md:mx-0",
                             )}
                           >
                             {!isEditing && (
@@ -187,7 +193,7 @@ export default function Write() {
                                   e.preventDefault();
                                   setIsEditing(true);
                                 }}
-                                className="absolute right-3 top-3 z-10 rounded-md border p-1 dark:bg-dark-tertiary dark:hover:bg-dark-tertiary/90 md:right-4 md:top-4 md:h-8 md:w-8"
+                                className="absolute right-3 top-3 z-10 rounded-md border bg-[#AECAF7] p-1 opacity-50 hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-dark-tertiary/90 md:right-4 md:top-4 md:h-8 md:w-8"
                               />
                             )}
 
@@ -198,7 +204,7 @@ export default function Write() {
                                   maxLength={50}
                                   type="text"
                                   placeholder="Book Title"
-                                  className="text-md w-full border-b-2 border-gray-300 pl-2 pr-6 outline-slate-100  dark:bg-transparent"
+                                  className="text-md w-full border-b-2 border-gray-300 bg-transparent pl-2 pr-6  outline-slate-100"
                                   value={book.title}
                                   onChange={(e) =>
                                     setBooks((prevBooks) =>
@@ -254,7 +260,7 @@ export default function Write() {
                           isEditing
                             ? "h-full w-80 md:w-80"
                             : "w-0 border-transparent",
-                          "relative overflow-hidden rounded-xl border-2 shadow-lg transition-all duration-500 dark:bg-dark-tertiary md:h-full",
+                          "relative overflow-hidden rounded-xl border-2 bg-[#AECAF7] shadow-lg transition-all duration-500 dark:bg-dark-tertiary md:h-full",
                         )}
                       >
                         <CircleX
@@ -284,7 +290,11 @@ export default function Write() {
                               defaultValue={book.notebook ? "notebook" : "book"}
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="book" id="book" />
+                                <RadioGroupItem
+                                  value="book"
+                                  id="book"
+                                  className="border-white text-white"
+                                />
                                 <Label
                                   className="text-nowrap"
                                   htmlFor="option-one"
@@ -296,6 +306,7 @@ export default function Write() {
                                 <RadioGroupItem
                                   value="notebook"
                                   id="notebook"
+                                  className="border-white text-white"
                                 />
                                 <Label
                                   className="text-nowrap"
@@ -315,8 +326,7 @@ export default function Write() {
                                 <div
                                   key={color}
                                   className={cn(
-                                    book.color === color &&
-                                      "bg-slate-200 dark:bg-white",
+                                    book.color === color && "bg-white",
                                     "flex h-10 w-10 items-center justify-center rounded-full border",
                                   )}
                                 >
@@ -340,7 +350,11 @@ export default function Write() {
                               defaultValue={book.label ? "label" : "no label"}
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="label" id="label" />
+                                <RadioGroupItem
+                                  value="label"
+                                  id="label"
+                                  className="border-white text-white"
+                                />
                                 <Label
                                   className="text-nowrap"
                                   htmlFor="option-one"
@@ -352,6 +366,7 @@ export default function Write() {
                                 <RadioGroupItem
                                   value="no label"
                                   id="no label"
+                                  className="border-white text-white"
                                 />
                                 <Label
                                   className="text-nowrap"
@@ -380,8 +395,8 @@ export default function Write() {
                                 <div
                                   key={image}
                                   className={cn(
-                                    book.coverImage === image && "bg-slate-300",
-                                    "h-10 w-10 cursor-pointer rounded-md border p-[1px] hover:scale-105",
+                                    book.coverImage === image && "bg-white",
+                                    "h-10 w-10 cursor-pointer rounded-md border p-[2px] hover:scale-105",
                                   )}
                                   onClick={() =>
                                     imageSelectHandler(book.id, image)
@@ -402,7 +417,7 @@ export default function Write() {
 
                               <div className="flex w-full items-start justify-between">
                                 <UploadButton
-                                  className="ut-button:shadown-md ut-button:border ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] dark:ut-button:border-white ut-button:dark:bg-transparent ut-button:dark:text-white ut-button:hover:dark:bg-dark-secondary dark:ut-allowed-content:text-gray-300"
+                                  className="ut-button:shadown-md ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] ut-button:dark:border dark:ut-button:border-white ut-button:dark:bg-transparent ut-button:dark:text-white ut-button:hover:dark:bg-dark-secondary dark:ut-allowed-content:text-gray-300"
                                   endpoint="imageUploader"
                                   onClientUploadComplete={(res) => {
                                     setBooks((prevBooks) => {
@@ -479,17 +494,17 @@ export default function Write() {
               </CarouselItem>
             </CarouselContent>
             {!isEditing && (
-              <CarouselNext className="transition-transform dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-dark-tertiary/90" />
+              <CarouselNext className="bg-[#AECAF7] transition-transform hover:scale-105 hover:bg-[#79A9F5] hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
             {!isEditing && (
-              <CarouselPrevious className="transition-transform dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-dark-tertiary/90" />
+              <CarouselPrevious className="bg-[#AECAF7] transition-transform hover:scale-105 hover:bg-[#79A9F5] hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
           </Carousel>
           {!isEditing && books.length > 0 && (
             <div className="z-10 mt-2 flex items-center justify-center gap-2">
               <Button
                 variant={"secondary"}
-                className="border transition-transform dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
+                className="border bg-[#AECAF7] text-white  transition-transform hover:bg-[#AECAF7]/90 dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
                 onClick={addBookHandler}
               >
                 + Add a new book
@@ -507,15 +522,25 @@ export default function Write() {
   );
 }
 
-// export const getServerSideProps = async () => {
-//   const queryClient = new QueryClient();
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { userId } = getAuth(ctx.req);
+  const queryClient = new QueryClient();
+  const clerkProps = await buildClerkProps(ctx.req);
 
-//   console.log("prefetching");
-//   await queryClient.prefetchQuery({
-//     queryKey: ["books"],
-//     queryFn: getBooks,
-//     staleTime: Infinity,
-//   });
+  if (!userId) {
+    console.log("User not authenticated");
+  } else {
+    await queryClient.prefetchQuery({
+      queryKey: ["books"],
+      queryFn: () => getBooks(userId),
+      staleTime: Infinity,
+    });
+  }
 
-//   return { props: { dehydratedState: dehydrate(queryClient) } };
-// };
+  return {
+    props: {
+      ...clerkProps,
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
+};

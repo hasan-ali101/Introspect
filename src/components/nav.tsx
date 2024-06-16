@@ -15,11 +15,16 @@ import {
 } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 export default function Nav() {
   return (
-    <div className="dark:bg-dark-primary">
-      <div className="flex h-16 w-full items-center justify-between border-b-2 border-black bg-gradient-to-t px-2 py-10 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:p-10">
+    <div
+      className={`bg-[#a7bdea] text-white  dark:bg-dark-primary ${montserrat.className}`}
+    >
+      <div className="flex h-16 w-full items-center justify-between border-b-2 border-white  bg-gradient-to-t px-2 py-12 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:p-10">
         <Link
           href="/write"
           className="flex items-center gap-2 text-lg md:gap-2 md:text-xl "
@@ -33,7 +38,7 @@ export default function Nav() {
               className="h-14 w-14"
             />
           </div>
-          <div>INTROSPECT</div>
+          <div className="tracking-widest">INTROSPECT</div>
         </Link>
         <div className="flex items-center gap-2 sm:gap-4 md:gap-8">
           <div className="h-8 w-8">
@@ -51,13 +56,13 @@ export default function Nav() {
             <SheetTrigger asChild>
               <Menu className="h-8 w-8 md:hidden" />
             </SheetTrigger>
-            <SheetContent className=" dark:bg-gray-900">
+            <SheetContent className="bg-gradient-to-t dark:from-dark-secondary dark:to-dark-primary">
               <div className="flex h-full flex-col justify-around">
-                <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-4 text-xl">
                   <SheetClose asChild>
                     <Link
                       href="/write"
-                      className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                      className="rounded-lg border bg-slate-100 px-6 py-6 transition-transform hover:cursor-pointer hover:bg-slate-200 dark:border-white dark:bg-dark-secondary dark:hover:bg-dark-secondary/90"
                     >
                       <p>Write</p>
                     </Link>
@@ -65,7 +70,7 @@ export default function Nav() {
                   <SheetClose asChild>
                     <Link
                       href="/meditate"
-                      className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                      className="rounded-lg border bg-slate-100 px-6 py-6 transition-transform hover:cursor-pointer hover:bg-slate-200 dark:border-white dark:bg-dark-secondary dark:hover:bg-dark-secondary/90"
                     >
                       <p>Meditate</p>
                     </Link>
@@ -73,7 +78,7 @@ export default function Nav() {
                   <SheetClose asChild>
                     <Link
                       href="/read"
-                      className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                      className="rounded-lg border bg-slate-100 px-6 py-6 transition-transform hover:cursor-pointer hover:bg-slate-200 dark:border-white dark:bg-dark-secondary dark:hover:bg-dark-secondary/90"
                     >
                       <p>Read</p>
                     </Link>
@@ -81,7 +86,7 @@ export default function Nav() {
                   <SheetClose asChild>
                     <Link
                       href="/read"
-                      className="rounded-lg bg-slate-100 px-6 py-6 transition-transform hover:scale-105 hover:cursor-pointer hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                      className="rounded-lg border bg-slate-100 px-6 py-6 transition-transform hover:cursor-pointer hover:bg-slate-200 dark:border-white dark:bg-dark-secondary dark:hover:bg-dark-secondary/90"
                     >
                       <p>Discuss</p>
                     </Link>
@@ -93,10 +98,12 @@ export default function Nav() {
                   </div>
                 </SignedOut>
                 <SignedIn>
-                  <div className="flex items-center justify-start gap-4 px-6 py-8 font-semibold underline">
-                    <UserButton />
-                    <SignOutButton />
-                  </div>
+                  <SignOutButton>
+                    <div className="flex cursor-pointer items-center justify-start gap-4 rounded-md border p-6 font-semibold  dark:border-white dark:bg-dark-tertiary hover:dark:bg-transparent">
+                      <UserButton />
+                      Sign Out
+                    </div>
+                  </SignOutButton>
                 </SignedIn>
               </div>
             </SheetContent>
@@ -104,7 +111,7 @@ export default function Nav() {
         </div>
       </div>
       <div className="relative h-10 w-full ">
-        <div className="absolute z-10 hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-black bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider underline shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12">
+        <div className="absolute z-10 hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-white bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider  shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12">
           <Link href="/write" className="hover:cursor-pointer">
             Write
           </Link>

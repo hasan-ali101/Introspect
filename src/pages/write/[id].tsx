@@ -11,11 +11,17 @@ import {
 const inter = Inter({ subsets: ["latin"] });
 import getBooks from "@/utils/getBooks";
 import { IBook } from "@/types/book";
+import { GetServerSideProps } from "next";
+import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
+import { useAuth } from "@clerk/nextjs";
 
 export default function Page() {
-  const { data } = useQuery({
+  const { userId } = useAuth();
+
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["books"],
-    queryFn: getBooks,
+    queryFn: () => getBooks(userId as string),
+    staleTime: Infinity,
   });
 
   const router = useRouter();
@@ -38,17 +44,25 @@ export default function Page() {
   );
 }
 
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { userId } = getAuth(ctx.req);
   const queryClient = new QueryClient();
+  const clerkProps = await buildClerkProps(ctx.req);
 
-  await queryClient.prefetchQuery({
-    queryKey: ["books"],
-    queryFn: getBooks,
-  });
+  if (!userId) {
+    console.log("User not authenticated");
+  } else {
+    await queryClient.prefetchQuery({
+      queryKey: ["books"],
+      queryFn: () => getBooks(userId),
+      staleTime: Infinity,
+    });
+  }
 
   return {
     props: {
+      ...clerkProps,
       dehydratedState: dehydrate(queryClient),
     },
   };
-}
+};

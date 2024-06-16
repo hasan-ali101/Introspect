@@ -11,6 +11,12 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/footer";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = React.useState(
@@ -31,7 +37,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <HydrationBoundary state={pageProps.dehydratedState}>
           <ThemeProvider attribute="class">
             <Nav />
-            <Component {...pageProps} />
+            <main className="relative">
+              <Component {...pageProps} />
+            </main>
             <Footer />
             <Toaster />
           </ThemeProvider>

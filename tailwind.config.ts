@@ -19,6 +19,9 @@ const config = withUt({
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-montserrat)"],
+      },
       colors: {
         "dark-primary": "#38396F",
         "dark-secondary": "#7e80e7",
