@@ -12,6 +12,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/footer";
 import { Montserrat } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -37,7 +38,12 @@ export default function App({ Component, pageProps }: AppProps) {
         <HydrationBoundary state={pageProps.dehydratedState}>
           <ThemeProvider attribute="class">
             <Nav />
-            <main className="relative">
+            <main
+              className={cn(
+                `relative flex min-h-full flex-col items-center bg-gradient-to-t from-[white] to-light-primary px-10 text-white dark:from-dark-secondary dark:to-dark-primary xl:min-h-screen 2xl:py-10`,
+                montserrat.className,
+              )}
+            >
               <Component {...pageProps} />
             </main>
             <Footer />

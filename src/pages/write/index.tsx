@@ -7,79 +7,81 @@ import {
   CarouselPrevious,
   CarouselApi,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { CircleX } from "lucide-react";
-import { CircleOff } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { IBook } from "@/types/book";
-import Image from "next/image";
-import { UploadButton } from "@/lib/utils";
 import { Pencil } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 import {
   dehydrate,
   QueryClient,
-  useQuery,
   useQueryClient,
+  useMutation,
 } from "@tanstack/react-query";
-import getBooks from "@/utils/getBooks";
-import { useEffect } from "react";
+import getBooks, { useBooksQuery } from "@/utils/getBooks";
 import { useAuth } from "@clerk/nextjs";
-import { addNewBook } from "@/utils/addNewBook";
+import addNewBook from "@/utils/addNewBook";
 import { updateBook } from "@/utils/updateBook";
 import { v4 as uuidv4 } from "uuid";
 import { SignedIn, SignInButton, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import BackgroundImage from "@/components/background-image";
-import { Montserrat } from "next/font/google";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
+import BookEditor from "@/components/book-editor";
+import { Montserrat } from "next/font/google";
 
-const montserrat = Montserrat({ subsets: ["latin"] });
-
-const defaultColors = [
-  "bg-red-300",
-  "bg-blue-300",
-  "bg-purple-300",
-  "bg-green-300",
-  "bg-orange-300",
-];
-
-const defaultImages = [
-  "/wave.jpeg",
-  "/stars.jpeg",
-  "/venus.jpeg",
-  "/flowers.webp",
-];
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+});
 
 export default function Write() {
   const queryClient = useQueryClient();
+
+  const { userId } = useAuth();
+
+  const { data, isError } = useBooksQuery(userId!);
+
+  const [books, setBooks] = useState<IBook[]>(data || []);
   const [isEditing, setIsEditing] = useState(false);
-  const [books, setBooks] = useState<IBook[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
     undefined,
   );
-  const { userId } = useAuth();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["books"],
-    queryFn: () => getBooks(userId as string),
-    staleTime: Infinity,
+  const addBookMutation = useMutation({
+    mutationFn: (book: IBook) => addNewBook(book),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["books"] });
+      console.log(JSON.stringify(books) === JSON.stringify(data));
+    },
+  });
+  const updateBookMutation = useMutation({
+    mutationFn: (book: IBook) => updateBook(book),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["books"] });
+      console.log(JSON.stringify(books) === JSON.stringify(data));
+    },
   });
 
-  console.log("data:", data);
-  console.log("loding: ", isLoading);
+  const editorCloseHandler = (book: IBook) => {
+    const originalBook = data?.find((b) => b.id === book.id);
 
-  useEffect(() => {
-    if (data) {
-      setBooks(data);
+    if (JSON.stringify(originalBook) !== JSON.stringify(book)) {
+      setDialogOpen(true);
+    } else {
+      setIsEditing(false);
     }
-  }, [data]); // this shouldn't be necessary. data should be set in the state initially
-
-  const { toast } = useToast();
+  };
 
   const colorSelectHandler = (id: string, color: string) => {
     setBooks((prevBooks) =>
@@ -103,12 +105,25 @@ export default function Write() {
     );
   };
 
-  const imageSelectHandler = (id: string, image: string) => {
+  const imageSelectHandler = (id: string, image: string | undefined) => {
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
         book.id === id ? { ...book, coverImage: image } : book,
       ),
     );
+  };
+
+  const imageUploadHandler = (res: any, id: string) => {
+    setBooks((prevBooks) => {
+      return prevBooks.map((prevBook) =>
+        prevBook.id === id
+          ? {
+              ...prevBook,
+              uploadedImage: res[0].url,
+            }
+          : prevBook,
+      );
+    });
   };
 
   const addBookHandler = () => {
@@ -133,20 +148,52 @@ export default function Write() {
   const saveChanges = (book: IBook) => {
     console.log("saving changes");
     if (book.id.startsWith("book")) {
-      console.log("updating existing book");
-      updateBook(book, book.id);
+      updateBookMutation.mutate(book);
     } else {
-      addNewBook(book);
+      addBookMutation.mutate(book);
     }
     isEditing && setIsEditing(false);
   };
 
+  const discardChanges = () => {
+    setBooks(data!);
+    setDialogOpen(false);
+    setIsEditing(false);
+  };
+
+  const UnsavedChangesDialog = () => {
+    return (
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent
+          className={cn(
+            montserrat.className,
+            "mx-auto max-w-md rounded-lg border bg-gradient-to-t from-white to-light-primary p-6 opacity-80 backdrop-blur-2xl dark:border-white dark:from-dark-secondary dark:to-dark-primary",
+          )}
+        >
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-slate-800 dark:text-slate-300">
+            You have unsaved changes. Are you sure you want to discard them?
+          </DialogDescription>
+          <DialogFooter className="mt-4 flex justify-end gap-2">
+            <Button onClick={discardChanges}>Discard Changes</Button>
+            <Button
+              variant="secondary"
+              className="border bg-white text-black dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus-visible:ring-gray-700"
+              onClick={() => setDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
-    <main
-      className={cn(
-        `relative flex min-h-full flex-col items-center bg-gradient-to-t from-[white] to-[#a7bdea] px-10 text-white dark:from-dark-secondary dark:to-dark-primary xl:min-h-screen 2xl:py-10 ${montserrat.className}`,
-      )}
-    >
+    <>
+      <UnsavedChangesDialog />
       <BackgroundImage />
       <div className="-mt-6 flex w-full flex-col gap-1 py-4 text-center md:mt-6">
         <h1 className="text-xl font-semibold">Your Library</h1>
@@ -178,13 +225,15 @@ export default function Write() {
                         )}
                       >
                         <Link
-                          className={cn(isEditing && "pointer-events-none")}
+                          onClick={(e) => {
+                            isEditing && e.preventDefault();
+                          }}
                           href={`/write/${book.id}`}
                         >
                           <div
                             className={cn(
                               !isEditing && "py-2 md:min-w-80",
-                              " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border bg-[#AECAF7] px-4 py-10  shadow-lg dark:bg-dark-tertiary md:mx-0",
+                              " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border bg-light-secondary px-4 py-10  shadow-lg dark:bg-dark-tertiary md:mx-0",
                             )}
                           >
                             {!isEditing && (
@@ -193,7 +242,7 @@ export default function Write() {
                                   e.preventDefault();
                                   setIsEditing(true);
                                 }}
-                                className="absolute right-3 top-3 z-10 rounded-md border bg-[#AECAF7] p-1 opacity-50 hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-dark-tertiary/90 md:right-4 md:top-4 md:h-8 md:w-8"
+                                className="absolute right-3 top-3 z-10 rounded-md border bg-light-secondary p-1 opacity-50 hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-dark-tertiary/90 md:right-4 md:top-4 md:h-8 md:w-8"
                               />
                             )}
 
@@ -233,7 +282,7 @@ export default function Write() {
                               pin={book.pin}
                             />
                             {!isEditing && (
-                              <div className="flex w-full justify-center border-y-[0.5px] dark:border-gray-200">
+                              <div className="flex w-full justify-center border-y-[0.5px] border-white dark:border-gray-200">
                                 <p className="line-clamp-2 max-w-40 px-4 py-[7px] text-center text-sm font-semibold md:max-w-64 md:text-lg">
                                   {book.title}
                                 </p>
@@ -244,7 +293,7 @@ export default function Write() {
                         {isEditing && (
                           <div className="-mt-4 flex flex-col items-center justify-center gap-4">
                             <Button
-                              className="w-40"
+                              className="w-40 border border-slate-300 bg-slate-50 text-slate-900 ring-offset-slate-950 hover:bg-slate-50/90 focus-visible:ring-slate-300"
                               onClick={() => {
                                 saveChanges(book);
                               }}
@@ -254,222 +303,16 @@ export default function Write() {
                           </div>
                         )}
                       </div>
-                      <div
-                        id="editor"
-                        className={cn(
-                          isEditing
-                            ? "h-full w-80 md:w-80"
-                            : "w-0 border-transparent",
-                          "relative overflow-hidden rounded-xl border-2 bg-[#AECAF7] shadow-lg transition-all duration-500 dark:bg-dark-tertiary md:h-full",
-                        )}
-                      >
-                        <CircleX
-                          size={28}
-                          className={cn(
-                            !isEditing ? "hidden" : "flex",
-                            "absolute right-2 top-2 cursor-pointer",
-                          )}
-                          onClick={() => {
-                            setIsEditing(false),
-                              queryClient.invalidateQueries({
-                                queryKey: ["books"],
-                              });
-                            setBooks(data!);
-                            carouselApi?.scrollTo(
-                              carouselApi?.slidesInView()[0],
-                            );
-                          }}
-                        />
-                        {isEditing && (
-                          <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
-                            <RadioGroup
-                              onValueChange={(e) =>
-                                notebookSelectHandler(book.id, e)
-                              }
-                              className="grid-flow-col"
-                              defaultValue={book.notebook ? "notebook" : "book"}
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="book"
-                                  id="book"
-                                  className="border-white text-white"
-                                />
-                                <Label
-                                  className="text-nowrap"
-                                  htmlFor="option-one"
-                                >
-                                  Book
-                                </Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="notebook"
-                                  id="notebook"
-                                  className="border-white text-white"
-                                />
-                                <Label
-                                  className="text-nowrap"
-                                  htmlFor="option-two"
-                                >
-                                  Notebook
-                                </Label>
-                              </div>
-                            </RadioGroup>
-                            <div
-                              className={cn(
-                                !isEditing && "hidden",
-                                "flex w-full justify-between",
-                              )}
-                            >
-                              {defaultColors.map((color) => (
-                                <div
-                                  key={color}
-                                  className={cn(
-                                    book.color === color && "bg-white",
-                                    "flex h-10 w-10 items-center justify-center rounded-full border",
-                                  )}
-                                >
-                                  <div
-                                    className={cn(
-                                      "h-8 w-8 cursor-pointer rounded-full hover:scale-105 ",
-                                      color,
-                                    )}
-                                    onClick={() =>
-                                      colorSelectHandler(book.id, color)
-                                    }
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                            <RadioGroup
-                              onValueChange={(e) =>
-                                labelSelectHandler(book.id, e)
-                              }
-                              className="grid-flow-col"
-                              defaultValue={book.label ? "label" : "no label"}
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="label"
-                                  id="label"
-                                  className="border-white text-white"
-                                />
-                                <Label
-                                  className="text-nowrap"
-                                  htmlFor="option-one"
-                                >
-                                  Label
-                                </Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="no label"
-                                  id="no label"
-                                  className="border-white text-white"
-                                />
-                                <Label
-                                  className="text-nowrap"
-                                  htmlFor="option-two"
-                                >
-                                  No Label
-                                </Label>
-                              </div>
-                            </RadioGroup>
-                            <div className="flex w-full justify-between">
-                              <div
-                                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border"
-                                onClick={() => {
-                                  setBooks((prevBooks) =>
-                                    prevBooks.map((prevBook) =>
-                                      prevBook.id === book.id
-                                        ? { ...prevBook, coverImage: "" }
-                                        : prevBook,
-                                    ),
-                                  );
-                                }}
-                              >
-                                <CircleOff className=" h-4 w-4" />
-                              </div>
-                              {defaultImages.map((image) => (
-                                <div
-                                  key={image}
-                                  className={cn(
-                                    book.coverImage === image && "bg-white",
-                                    "h-10 w-10 cursor-pointer rounded-md border p-[2px] hover:scale-105",
-                                  )}
-                                  onClick={() =>
-                                    imageSelectHandler(book.id, image)
-                                  }
-                                >
-                                  <Image
-                                    className="h-full w-full rounded-md object-cover"
-                                    src={image}
-                                    width={100}
-                                    height={100}
-                                    alt={image}
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                            <div className="flex flex-col gap-3">
-                              <p className="text-sm">Upload a cover image:</p>
-
-                              <div className="flex w-full items-start justify-between">
-                                <UploadButton
-                                  className="ut-button:shadown-md ut-button:border-zinc-500 ut-button:bg-zinc-100 ut-button:p-4 ut-button:text-sm ut-button:text-black hover:ut-button:bg-zinc-100/80 ut-allowed-content:text-[8px] ut-button:dark:border dark:ut-button:border-white ut-button:dark:bg-transparent ut-button:dark:text-white ut-button:hover:dark:bg-dark-secondary dark:ut-allowed-content:text-gray-300"
-                                  endpoint="imageUploader"
-                                  onClientUploadComplete={(res) => {
-                                    setBooks((prevBooks) => {
-                                      return prevBooks.map((prevBook) =>
-                                        prevBook.id === book.id
-                                          ? {
-                                              ...prevBook,
-                                              uploadedImage: res[0].url,
-                                            }
-                                          : prevBook,
-                                      );
-                                    });
-                                    toast({
-                                      description: "Image Upload Successful",
-                                    });
-                                  }}
-                                  onUploadError={(error: Error) => {
-                                    // Do something with the error.
-                                    toast({
-                                      description: "Image Upload Error",
-                                    });
-                                  }}
-                                />
-                                <div className="flex flex-col items-center justify-center gap-2">
-                                  <div
-                                    className={cn(
-                                      book.coverImage === book.uploadedImage &&
-                                        book.uploadedImage &&
-                                        "bg-slate-300 hover:scale-105",
-                                      "h-10 w-10 cursor-pointer rounded-md border-2 p-[1px]",
-                                    )}
-                                    onClick={() => {
-                                      book.uploadedImage &&
-                                        imageSelectHandler(
-                                          book.id,
-                                          book.uploadedImage,
-                                        );
-                                    }}
-                                  >
-                                    {book.uploadedImage && (
-                                      <img
-                                        src={book.uploadedImage}
-                                        className="h-full w-full rounded-md"
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <BookEditor
+                        isEditing={isEditing}
+                        onClose={editorCloseHandler}
+                        onNotebookSelect={notebookSelectHandler}
+                        onColorSelect={colorSelectHandler}
+                        onLabelSelect={labelSelectHandler}
+                        onImageSelect={imageSelectHandler}
+                        onImageUploaded={imageUploadHandler}
+                        book={book}
+                      />
                     </div>
                   </CarouselItem>
                 ))}
@@ -484,27 +327,21 @@ export default function Write() {
                   >
                     +
                   </div>
-                  <Button
-                    className="text-xs md:text-sm"
-                    onClick={addBookHandler}
-                  >
-                    Add book
-                  </Button>
                 </div>
               </CarouselItem>
             </CarouselContent>
             {!isEditing && (
-              <CarouselNext className="bg-[#AECAF7] transition-transform hover:scale-105 hover:bg-[#79A9F5] hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
+              <CarouselNext className="bg-light-secondary transition-transform hover:scale-105 hover:bg-light-secondary/90 hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
             {!isEditing && (
-              <CarouselPrevious className="bg-[#AECAF7] transition-transform hover:scale-105 hover:bg-[#79A9F5] hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
+              <CarouselPrevious className="bg-light-secondary transition-transform hover:scale-105 hover:bg-light-secondary/90 hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
           </Carousel>
           {!isEditing && books.length > 0 && (
             <div className="z-10 mt-2 flex items-center justify-center gap-2">
               <Button
                 variant={"secondary"}
-                className="border bg-[#AECAF7] text-white  transition-transform hover:bg-[#AECAF7]/90 dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
+                className="border bg-light-secondary text-white  transition-transform hover:bg-light-secondary/90 dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
                 onClick={addBookHandler}
               >
                 + Add a new book
@@ -518,7 +355,7 @@ export default function Write() {
           <SignInButton />
         </div>
       </SignedOut>
-    </main>
+    </>
   );
 }
 

@@ -27,7 +27,9 @@ export default function Page() {
   const router = useRouter();
   console.log(router.query.id);
 
-  const book: IBook = data?.find((book: IBook) => book.id === router.query.id);
+  const book: IBook | undefined = data?.find(
+    (book: IBook) => book.id === router.query.id,
+  );
   console.log(book);
 
   return (

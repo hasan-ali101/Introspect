@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 const Footer = () => (
-  <div className="hidden h-52 w-full justify-center overflow-clip bg-dark-secondary dark:flex">
+  <div className=" flex h-52 w-full justify-center overflow-clip dark:bg-dark-secondary">
     <Image
       src="/footer.png"
       alt="footer"

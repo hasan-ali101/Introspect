@@ -1,8 +1,8 @@
 import type { IBook } from "@/types/book";
 
-export const updateBook = async (book: IBook, id: string) => {
+export const updateBook = async (book: IBook) => {
   try {
-    const response = await fetch(`/api/books/${id}`, {
+    const response = await fetch(`/api/books/${book.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

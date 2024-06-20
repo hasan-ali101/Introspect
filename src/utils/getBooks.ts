@@ -2,10 +2,9 @@ import { IBook } from "@/types/book";
 import db from "@/db/drizzle";
 import { books } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { useQuery } from "@tanstack/react-query";
 
-export const getBooks = async (
-  userId: string,
-): Promise<IBook[] | undefined> => {
+const getBooks = async (userId: string): Promise<IBook[] | undefined> => {
   if (typeof window == "undefined") {
     console.log("Application is on server side");
     try {
@@ -31,6 +30,14 @@ export const getBooks = async (
       return []; // Return an empty array in case of error
     }
   }
+};
+
+export const useBooksQuery = (userId: string) => {
+  return useQuery({
+    queryKey: ["books"],
+    queryFn: () => getBooks(userId as string),
+    staleTime: Infinity,
+  });
 };
 
 export default getBooks;

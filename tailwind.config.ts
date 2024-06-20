@@ -26,6 +26,8 @@ const config = withUt({
         "dark-primary": "#38396F",
         "dark-secondary": "#7e80e7",
         "dark-tertiary": "#696aca80",
+        "light-primary": "#a7bdea",
+        "light-secondary": "#a5beea",
       },
       keyframes: {
         "accordion-down": {
