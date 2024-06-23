@@ -167,7 +167,7 @@ export default function Write() {
         <DialogContent
           className={cn(
             montserrat.className,
-            "mx-auto max-w-md rounded-lg border bg-gradient-to-t from-white to-light-primary p-6 opacity-80 backdrop-blur-2xl dark:border-white dark:from-dark-secondary dark:to-dark-primary",
+            "mx-auto max-w-md rounded-lg border bg-gradient-to-t from-white to-light-primary p-6 opacity-60 backdrop-blur-2xl dark:border-white dark:from-dark-secondary dark:to-dark-primary dark:opacity-80",
           )}
         >
           <DialogHeader>
@@ -331,17 +331,17 @@ export default function Write() {
               </CarouselItem>
             </CarouselContent>
             {!isEditing && (
-              <CarouselNext className="bg-light-secondary transition-transform hover:scale-105 hover:bg-light-secondary/90 hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
+              <CarouselNext className="bg-light-secondary/90 transition-transform hover:scale-105 hover:bg-light-secondary/90 hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
             {!isEditing && (
-              <CarouselPrevious className="bg-light-secondary transition-transform hover:scale-105 hover:bg-light-secondary/90 hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
+              <CarouselPrevious className="bg-light-secondary/90 transition-transform hover:scale-105 hover:bg-light-secondary/90 hover:text-white dark:border-white dark:bg-dark-tertiary dark:hover:scale-105 hover:dark:bg-dark-tertiary/90" />
             )}
           </Carousel>
           {!isEditing && books.length > 0 && (
             <div className="z-10 mt-2 flex items-center justify-center gap-2">
               <Button
                 variant={"secondary"}
-                className="border bg-light-secondary text-white  transition-transform hover:bg-light-secondary/90 dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
+                className="border bg-light-secondary/80 text-white  transition-transform hover:bg-light-secondary/90 dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
                 onClick={addBookHandler}
               >
                 + Add a new book

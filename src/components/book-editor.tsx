@@ -51,8 +51,8 @@ const BookEditor = ({
     <div
       id="editor"
       className={cn(
-        isEditing ? "h-full w-80 md:w-80" : "w-0 border-transparent",
-        "relative overflow-hidden rounded-xl border-2 bg-[#a5beea] shadow-lg transition-all duration-500 dark:bg-dark-tertiary md:h-full",
+        isEditing ? "w-80 md:w-80" : "w-0 border-transparent",
+        "relative h-full overflow-hidden rounded-xl border-2 bg-[#a5beea] shadow-lg transition-all duration-500 dark:bg-dark-tertiary md:h-full",
       )}
     >
       <CircleX

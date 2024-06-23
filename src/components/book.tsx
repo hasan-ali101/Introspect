@@ -24,7 +24,7 @@ const Book = ({
         )}
       >
         <Image
-          className="h-full w-full"
+          className="h-full w-full shadow-md"
           src="/book3.png"
           alt="book"
           width={275}
@@ -62,14 +62,14 @@ const Book = ({
           </div>
         </div>
         {notebook && (
-          <div className="absolute -left-[1.5px] top-0 flex h-full w-3 flex-col justify-around py-2">
-            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
-            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
-            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
-            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
-            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
-            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
-            <div className="flex  h-[5px] rounded-l-xl border-b-2 border-l-2 border-b-slate-500 border-l-slate-500 dark:border-gray-100"></div>
+          <div className="absolute -left-[1.9px] top-0 flex h-full w-3 flex-col justify-around py-2">
+            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-gray-200 dark:border-gray-100"></div>
+            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-gray-200 dark:border-gray-100"></div>
+            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-gray-200 dark:border-gray-100"></div>
+            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-gray-200 dark:border-gray-100"></div>
+            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-gray-200  dark:border-gray-100"></div>
+            <div className="h-[5px] rounded-l-xl border-b-2 border-l-2 border-gray-200 dark:border-gray-100"></div>
+            <div className="flex  h-[5px] rounded-l-xl border-b-2 border-l-2 border-gray-200 dark:border-gray-100"></div>
           </div>
         )}
       </div>

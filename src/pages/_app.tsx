@@ -40,13 +40,13 @@ export default function App({ Component, pageProps }: AppProps) {
             <Nav />
             <main
               className={cn(
-                `relative flex min-h-full flex-col items-center bg-gradient-to-t from-[white] to-light-primary px-10 text-white dark:from-dark-secondary dark:to-dark-primary xl:min-h-screen 2xl:py-10`,
+                `relative flex min-h-screen flex-col items-center bg-gradient-to-t from-[white] to-light-primary text-white dark:from-dark-secondary dark:to-dark-primary xl:min-h-screen 2xl:pt-10`,
                 montserrat.className,
               )}
             >
               <Component {...pageProps} />
+              <Footer />
             </main>
-            <Footer />
             <Toaster />
           </ThemeProvider>
         </HydrationBoundary>

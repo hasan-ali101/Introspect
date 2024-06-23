@@ -18,7 +18,7 @@ import { useAuth } from "@clerk/nextjs";
 export default function Page() {
   const { userId } = useAuth();
 
-  const { data, isLoading, isError } = useQuery({
+  const { data } = useQuery({
     queryKey: ["books"],
     queryFn: () => getBooks(userId as string),
     staleTime: Infinity,
@@ -30,19 +30,14 @@ export default function Page() {
   const book: IBook | undefined = data?.find(
     (book: IBook) => book.id === router.query.id,
   );
-  console.log(book);
 
   return (
-    <main
-      className={cn(
-        `relative flex min-h-[400px] flex-col items-center bg-gradient-to-t px-10 dark:from-[#7e80e7] dark:to-dark-primary 2xl:py-10 ${inter.className}`,
-      )}
-    >
+    <>
       <BackgroundImage />
       <div className="flex h-80 items-center justify-center">
         <h1 className="text-4xl font-bold">{book?.title}</h1>
       </div>
-    </main>
+    </>
   );
 }
 
