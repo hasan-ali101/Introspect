@@ -1,4 +1,3 @@
-import BackgroundImage from "@/components/background-image";
 import { cn } from "@/lib/utils";
 import { Inter } from "next/font/google";
 import { useRouter } from "next/router";
@@ -14,8 +13,13 @@ import { IBook } from "@/types/book";
 import { GetServerSideProps } from "next";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { useAuth } from "@clerk/nextjs";
+import { useMemo } from "react";
+import { Doc as YDoc } from "yjs";
+
+import { BlockEditor } from "@/tiptap/components/BlockEditor";
 
 export default function Page() {
+  const ydoc = useMemo(() => new YDoc(), []);
   const { userId } = useAuth();
 
   const { data } = useQuery({
@@ -33,9 +37,14 @@ export default function Page() {
 
   return (
     <>
-      <BackgroundImage />
-      <div className="flex h-80 items-center justify-center">
-        <h1 className="text-4xl font-bold">{book?.title}</h1>
+      <div className="flex  flex-col items-center justify-center gap-6 px-10 md:mt-8 md:px-16">
+        <h1 className="text-2xl font-bold md:text-4xl">{book?.title}</h1>
+        <div className="flex h-[500px] rounded-3xl border bg-dark-tertiary ">
+          <div className="hidden h-full rounded-l-3xl border transition-all md:flex md:w-64 lg:w-72 "></div>
+          <div className=" border-left  h-full  w-80 overflow-auto pt-6 transition-all md:w-[500px] lg:w-[740px]">
+            <BlockEditor hasCollab={false} ydoc={ydoc} />
+          </div>
+        </div>
       </div>
     </>
   );

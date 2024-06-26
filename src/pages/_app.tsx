@@ -6,13 +6,15 @@ import {
   HydrationBoundary,
 } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
-import Nav from "@/components/nav";
-import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "@/components/ui/toaster";
-import Footer from "@/components/footer";
 import { Montserrat } from "next/font/google";
 import { cn } from "@/lib/utils";
+
+import { ThemeProvider } from "@/components/theme-provider";
+import BackgroundImage from "@/components/background-image";
+import Nav from "@/components/nav";
+import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/footer";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -40,10 +42,11 @@ export default function App({ Component, pageProps }: AppProps) {
             <Nav />
             <main
               className={cn(
-                `relative flex min-h-screen flex-col items-center bg-gradient-to-t from-[white] to-light-primary text-white dark:from-dark-secondary dark:to-dark-primary xl:min-h-screen 2xl:pt-10`,
+                `relative flex min-h-screen flex-col items-center bg-gradient-to-t from-[white] to-light-primary text-white dark:from-dark-secondary dark:to-dark-primary 2xl:pt-10`,
                 montserrat.className,
               )}
             >
+              <BackgroundImage />
               <Component {...pageProps} />
               <Footer />
             </main>

@@ -164,7 +164,7 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
           ref={ref}
           className={cn(
             isEditing ? "md:md:w-[800px]" : "md:w-[500px]",
-            "flex w-[340px] sm:w-[400px] ",
+            "flex w-[340px] sm:w-[400px]",
             orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
             className,
           )}

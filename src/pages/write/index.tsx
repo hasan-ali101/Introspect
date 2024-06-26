@@ -33,7 +33,6 @@ import { updateBook } from "@/utils/updateBook";
 import { v4 as uuidv4 } from "uuid";
 import { SignedIn, SignInButton, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
-import BackgroundImage from "@/components/background-image";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import BookEditor from "@/components/book-editor";
@@ -49,7 +48,7 @@ export default function Write() {
 
   const { userId } = useAuth();
 
-  const { data, isError } = useBooksQuery(userId!);
+  const { data, isError, isLoading } = useBooksQuery(userId!);
 
   const [books, setBooks] = useState<IBook[]>(data || []);
   const [isEditing, setIsEditing] = useState(false);
@@ -57,6 +56,10 @@ export default function Write() {
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
     undefined,
   );
+
+  console.log("data", data);
+  console.log("isLoading", isLoading);
+  console.log("isError", isError);
 
   const addBookMutation = useMutation({
     mutationFn: (book: IBook) => addNewBook(book),
@@ -194,7 +197,6 @@ export default function Write() {
   return (
     <>
       <UnsavedChangesDialog />
-      <BackgroundImage />
       <div className="-mt-6 flex w-full flex-col gap-1 py-4 text-center md:mt-6">
         <h1 className="text-xl font-semibold">Your Library</h1>
         <p className=" dark:text-indigo-200">
@@ -220,7 +222,7 @@ export default function Write() {
                       <div
                         className={cn(
                           !isEditing &&
-                            "cursor-pointer transition-transform hover:scale-105",
+                            "w-64 cursor-pointer transition-transform hover:scale-105 sm:w-80",
                           "flex flex-col gap-8",
                         )}
                       >
@@ -232,8 +234,8 @@ export default function Write() {
                         >
                           <div
                             className={cn(
-                              !isEditing && "py-2 md:min-w-80",
-                              " relative mx-4 flex min-w-56 flex-col items-center gap-6 rounded-3xl border bg-light-secondary px-4 py-10  shadow-lg dark:bg-dark-tertiary md:mx-0",
+                              !isEditing && "md:min-w-80 py-2",
+                              " min-w-56 relative mx-4 flex flex-col items-center gap-6 rounded-3xl border bg-light-secondary px-4 py-10  shadow-lg dark:bg-dark-tertiary md:mx-0",
                             )}
                           >
                             {!isEditing && (
@@ -283,7 +285,7 @@ export default function Write() {
                             />
                             {!isEditing && (
                               <div className="flex w-full justify-center border-y-[0.5px] border-white dark:border-gray-200">
-                                <p className="line-clamp-2 max-w-40 px-4 py-[7px] text-center text-sm font-semibold md:max-w-64 md:text-lg">
+                                <p className="max-w-40 md:max-w-64 line-clamp-2 px-4 py-[7px] text-center text-sm font-semibold md:text-lg">
                                   {book.title}
                                 </p>
                               </div>
@@ -338,7 +340,7 @@ export default function Write() {
             )}
           </Carousel>
           {!isEditing && books.length > 0 && (
-            <div className="z-10 mt-2 flex items-center justify-center gap-2">
+            <div className="z-10 mt-6 flex items-center justify-center gap-2">
               <Button
                 variant={"secondary"}
                 className="border bg-light-secondary/80 text-white  transition-transform hover:bg-light-secondary/90 dark:border-white dark:bg-dark-tertiary hover:dark:scale-105 hover:dark:bg-transparent"
