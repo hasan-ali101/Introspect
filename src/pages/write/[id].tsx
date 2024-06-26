@@ -49,7 +49,7 @@ export default function Page() {
           <h1 className="p-4 text-xl font-bold  md:text-2xl">
             Title: {book?.title}
           </h1>
-          <div className="w-32"></div>
+          <div className="w-40"></div>
         </div>
         <div className="flex h-[500px] rounded-3xl border bg-dark-tertiary ">
           <div className="hidden h-full w-48 rounded-l-3xl border transition-all sm:flex md:w-64 lg:w-72 "></div>

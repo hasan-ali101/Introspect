@@ -1,4 +1,4 @@
-import { integer, text, boolean, pgTable } from "drizzle-orm/pg-core";
+import { integer, text, boolean, pgTable, date } from "drizzle-orm/pg-core";
 
 export const books = pgTable("books", {
   id: text("id").primaryKey().notNull().unique(),
@@ -10,4 +10,12 @@ export const books = pgTable("books", {
   coverImage: text("coverImage"),
   uploadedImage: text("uploadedImage"),
   pin: integer("pin"),
+});
+
+export const entries = pgTable("entries", {
+  id: text("id").primaryKey().notNull().unique(),
+  bookId: text("bookId").notNull(),
+  content: text("content"),
+  createdAt: date("createdAt"),
+  updatedAt: date("updatedAt"),
 });
