@@ -16,31 +16,31 @@ import { ContentItemMenu } from "../menus/ContentItemMenu";
 
 export const BlockEditor = ({ ydoc }: TiptapProps) => {
   const menuContainerRef = useRef(null);
-  const editorRef = useRef<PureEditorContent | null>(null);
+  if (typeof window === "undefined") {
+    return null;
+  }
 
-  const { editor } = useBlockEditor({ ydoc });
+  const { editor } = useBlockEditor();
 
   if (!editor) {
     return null;
   }
 
   return (
-    <div className="flex h-full" ref={menuContainerRef}>
-      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
-        <EditorContent
-          editor={editor}
-          ref={editorRef}
-          className="flex-1 overflow-y-auto"
-        />
-        <ContentItemMenu editor={editor} />
-        <LinkMenu editor={editor} appendTo={menuContainerRef} />
-        <TextMenu editor={editor} />
-        <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
-        <TableRowMenu editor={editor} appendTo={menuContainerRef} />
-        <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
-        <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+    <>
+      <div className="flex h-full" ref={menuContainerRef}>
+        <div className="relative flex h-full flex-1 flex-col overflow-hidden">
+          <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
+          <ContentItemMenu editor={editor} />
+          <LinkMenu editor={editor} appendTo={menuContainerRef} />
+          <TextMenu editor={editor} />
+          <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
+          <TableRowMenu editor={editor} appendTo={menuContainerRef} />
+          <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
+          <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

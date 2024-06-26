@@ -17,6 +17,8 @@ import { useMemo } from "react";
 import { Doc as YDoc } from "yjs";
 
 import { BlockEditor } from "@/tiptap/components/BlockEditor";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function Page() {
   const ydoc = useMemo(() => new YDoc(), []);
@@ -37,11 +39,21 @@ export default function Page() {
 
   return (
     <>
-      <div className="flex  flex-col items-center justify-center gap-6 px-10 md:mt-8 md:px-16">
-        <h1 className="text-2xl font-bold md:text-4xl">{book?.title}</h1>
+      <div className="flex  flex-col items-center justify-center gap-6 md:mt-8">
+        <div className="flex w-full flex-col-reverse items-center justify-between gap-2 sm:flex-row">
+          <Link href="/write">
+            <div className="flex cursor-pointer gap-2 rounded-xl text-sm hover:bg-white/20 sm:p-4 md:text-base">
+              <ArrowLeft /> <p>back to all books</p>
+            </div>
+          </Link>
+          <h1 className="p-4 text-xl font-bold  md:text-2xl">
+            Title: {book?.title}
+          </h1>
+          <div className="w-32"></div>
+        </div>
         <div className="flex h-[500px] rounded-3xl border bg-dark-tertiary ">
-          <div className="hidden h-full rounded-l-3xl border transition-all md:flex md:w-64 lg:w-72 "></div>
-          <div className=" border-left  h-full  w-80 overflow-auto pt-6 transition-all md:w-[500px] lg:w-[740px]">
+          <div className="hidden h-full w-48 rounded-l-3xl border transition-all sm:flex md:w-64 lg:w-72 "></div>
+          <div className=" border-left  h-full  w-80 overflow-auto pt-6 transition-all sm:w-[430px] md:w-[480px] lg:w-[720px]">
             <BlockEditor hasCollab={false} ydoc={ydoc} />
           </div>
         </div>

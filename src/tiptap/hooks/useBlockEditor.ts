@@ -1,8 +1,6 @@
 import { Editor, useEditor } from "@tiptap/react";
-import type { Doc as YDoc } from "yjs";
 
 import { ExtensionKit } from "@/tiptap/extensions/extension-kit";
-import { useSidebar } from "./useSidebar";
 import { initialContent } from "@/tiptap/lib/data/initialContent";
 
 declare global {
@@ -11,29 +9,23 @@ declare global {
   }
 }
 
-export const useBlockEditor = ({ ydoc }: { ydoc: YDoc }) => {
-  const leftSidebar = useSidebar();
-
-  const editor = useEditor(
-    {
-      autofocus: true,
-      onCreate: ({ editor }) => {
-        if (editor.isEmpty) {
-          editor.commands.setContent(initialContent);
-        }
-      },
-      extensions: [...ExtensionKit({})],
-      editorProps: {
-        attributes: {
-          autocomplete: "off",
-          autocorrect: "off",
-          autocapitalize: "off",
-          class: "min-h-full",
-        },
+export const useBlockEditor = () => {
+  const editor = useEditor({
+    autofocus: true,
+    content: window.localStorage.getItem("editor-content"),
+    onUpdate: ({ editor }) => {
+      window.localStorage.setItem("editor-content", editor.getHTML());
+    },
+    extensions: [...ExtensionKit({})],
+    editorProps: {
+      attributes: {
+        autocomplete: "off",
+        autocorrect: "off",
+        autocapitalize: "off",
+        class: "min-h-full",
       },
     },
-    [ydoc],
-  );
+  });
 
   const characterCount = editor?.storage.characterCount || {
     characters: () => 0,
@@ -44,5 +36,5 @@ export const useBlockEditor = ({ ydoc }: { ydoc: YDoc }) => {
     window.editor = editor;
   }
 
-  return { editor, characterCount, leftSidebar };
+  return { editor, characterCount };
 };

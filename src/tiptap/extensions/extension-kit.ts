@@ -77,8 +77,7 @@ export const ExtensionKit = ({
     dropcursor: false,
     heading: false,
     horizontalRule: false,
-    blockquote: false,
-    history: false,
+    // blockquote: false,
     codeBlock: false,
   }),
   CodeBlockLowlight.configure({
