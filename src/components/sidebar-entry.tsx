@@ -10,7 +10,7 @@ const SidebarEntry = ({ entry }: SidebarEntryProps) => {
   return (
     <div
       key={entry.id}
-      className="mx-3 flex cursor-pointer flex-col gap-3 border-b border-gray-300 px-2 py-6 hover:bg-white/10"
+      className="mx-3 flex cursor-pointer flex-col gap-3 border-b border-gray-300 px-2 py-6 backdrop-blur-md hover:bg-white/10"
     >
       <div className="flex items-center gap-2">
         <Star

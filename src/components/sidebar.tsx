@@ -1,10 +1,11 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   PanelLeftClose,
   PanelLeftOpen,
   CirclePlus,
   ArrowDownWideNarrow,
 } from "lucide-react";
+import { Reorder } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import SidebarEntry from "@/components/sidebar-entry";
@@ -44,6 +45,8 @@ const dummyEntries = [
 ];
 
 const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
+  const [entries, setEntries] = useState(dummyEntries);
+
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (event.metaKey === true || event.ctrlKey === true) {
       if (event.key === "b") {
@@ -94,9 +97,13 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
             </div>
           </div>
           <div className="flex w-full flex-col overflow-auto">
-            {dummyEntries.map((entry) => (
-              <SidebarEntry entry={entry} />
-            ))}
+            <Reorder.Group axis="y" values={entries} onReorder={setEntries}>
+              {entries.map((entry) => (
+                <Reorder.Item key={entry.id} value={entry}>
+                  <SidebarEntry entry={entry} />
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
           </div>
         </div>
       )}
