@@ -18,4 +18,5 @@ export const entries = pgTable("entries", {
   content: text("content"),
   createdAt: date("createdAt"),
   updatedAt: date("updatedAt"),
+  favourite: boolean("favourite"),
 });

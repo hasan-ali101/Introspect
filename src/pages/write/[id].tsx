@@ -7,7 +7,6 @@ import {
   useQuery,
   // useQueryClient,
 } from "@tanstack/react-query";
-const inter = Inter({ subsets: ["latin"] });
 import getBooks from "@/utils/getBooks";
 import { IBook } from "@/types/book";
 import { GetServerSideProps } from "next";
@@ -54,7 +53,7 @@ export default function Page() {
           </h1>
           <div className="w-40"></div>
         </div>
-        <div className="flex h-[600px] rounded-3xl border bg-dark-tertiary ">
+        <div className="flex h-[600px] rounded-3xl border ">
           <Sidebar
             isOpen={sidebarOpen}
             toggleSidebar={() => setSidebarOpen((state) => !state)}
@@ -64,7 +63,7 @@ export default function Page() {
               sidebarOpen
                 ? "w-0 sm:w-[430px] md:w-[480px] lg:w-[720px]"
                 : "w-64 sm:w-[500px] md:w-[550px]  lg:w-[770px]",
-              " h-full overflow-auto pt-6 transition-all",
+              " h-full overflow-auto rounded-r-3xl bg-dark-tertiary pt-6 opacity-100 transition-all",
             )}
           >
             <BlockEditor hasCollab={false} ydoc={ydoc} />
