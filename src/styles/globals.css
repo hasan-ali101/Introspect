@@ -9,7 +9,7 @@
   } */
 
   .ProseMirror {
-    @apply caret-black dark:caret-white outline-0 px-10 bg-transparent md:pl-24 py-8 z-0 lg:pl-32 lg:pr-12;
+    @apply caret-black dark:caret-white outline-0 bg-transparent pl-12 md:pl-24 py-8 z-0 pr-12 lg:pr-14;
   
     & > * {
       @apply mx-auto max-w-2xl;

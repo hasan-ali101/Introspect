@@ -48,8 +48,8 @@ export default function App({ Component, pageProps }: AppProps) {
             >
               <BackgroundImage />
               <Component {...pageProps} />
-              <Footer />
             </main>
+            <Footer />
             <Toaster />
           </ThemeProvider>
         </HydrationBoundary>

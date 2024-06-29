@@ -13,14 +13,17 @@ import { IBook } from "@/types/book";
 import { GetServerSideProps } from "next";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { useAuth } from "@clerk/nextjs";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Doc as YDoc } from "yjs";
 
 import { BlockEditor } from "@/tiptap/components/BlockEditor";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Sidebar from "@/components/sidebar";
 
 export default function Page() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const ydoc = useMemo(() => new YDoc(), []);
   const { userId } = useAuth();
 
@@ -39,7 +42,7 @@ export default function Page() {
 
   return (
     <>
-      <div className="flex  flex-col items-center justify-center gap-6 md:mt-8">
+      <div className="flex flex-col items-center justify-center gap-6 md:mt-8">
         <div className="flex w-full flex-col-reverse items-center justify-between gap-2 sm:flex-row">
           <Link href="/write">
             <div className="flex cursor-pointer gap-2 rounded-xl text-sm hover:bg-white/20 sm:p-4 md:text-base">
@@ -51,9 +54,19 @@ export default function Page() {
           </h1>
           <div className="w-40"></div>
         </div>
-        <div className="flex h-[500px] rounded-3xl border bg-dark-tertiary ">
-          <div className="hidden h-full w-48 rounded-l-3xl border transition-all sm:flex md:w-64 lg:w-72 "></div>
-          <div className=" border-left  h-full  w-80 overflow-auto pt-6 transition-all sm:w-[430px] md:w-[480px] lg:w-[720px]">
+        <div className="flex h-[600px] rounded-3xl border bg-dark-tertiary ">
+          <Sidebar
+            isOpen={sidebarOpen}
+            toggleSidebar={() => setSidebarOpen((state) => !state)}
+          />
+          <div
+            className={cn(
+              sidebarOpen
+                ? "w-0 sm:w-[430px] md:w-[480px] lg:w-[720px]"
+                : "w-64 sm:w-[500px] md:w-[550px]  lg:w-[770px]",
+              " h-full overflow-auto pt-6 transition-all",
+            )}
+          >
             <BlockEditor hasCollab={false} ydoc={ydoc} />
           </div>
         </div>
@@ -67,6 +80,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const queryClient = new QueryClient();
   const clerkProps = await buildClerkProps(ctx.req);
 
+  //TODO: get only the book that is being edited
   if (!userId) {
     console.log("User not authenticated");
   } else {

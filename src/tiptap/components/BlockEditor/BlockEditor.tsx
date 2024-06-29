@@ -28,7 +28,7 @@ export const BlockEditor = ({ ydoc }: TiptapProps) => {
 
   return (
     <>
-      <div className="flex h-full" ref={menuContainerRef}>
+      <div className="flex h-full " ref={menuContainerRef}>
         <div className="relative flex h-full flex-1 flex-col overflow-hidden">
           <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
           <ContentItemMenu editor={editor} />
