@@ -9,43 +9,22 @@ import { Reorder } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import SidebarEntry from "@/components/sidebar-entry";
+import { Entry } from "@/types/entry";
 
-type SidebarProps = { isOpen: Boolean; toggleSidebar: () => void };
+type SidebarProps = {
+  isOpen: Boolean;
+  toggleSidebar: () => void;
+  bookEntries?: Entry[];
+  onEntrySelected: (entry: Entry) => void;
+};
 
-const dummyEntries = [
-  {
-    id: 1,
-    bookId: 1,
-    firstLine: "Ideas for Introspect…",
-    secondLine:
-      "So the fetch request returns the data when used from the client, but it returns undefined / the response is not ok.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    favourite: false,
-  },
-  {
-    id: 2,
-    bookId: 1,
-    firstLine: "This is the second entry",
-    secondLine:
-      "This is the second line but this time it's quite  lot longer than the first one. I wonder how it will look like when it's truncated.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    favourite: true,
-  },
-  {
-    id: 3,
-    bookId: 1,
-    firstLine: "This is the third entry and it's quite long",
-    secondLine: "This is the second line",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    favourite: false,
-  },
-];
-
-const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
-  const [entries, setEntries] = useState(dummyEntries);
+const Sidebar = ({
+  isOpen,
+  toggleSidebar,
+  bookEntries,
+  onEntrySelected,
+}: SidebarProps) => {
+  const [entries, setEntries] = useState(bookEntries);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (event.metaKey === true || event.ctrlKey === true) {
@@ -70,7 +49,7 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
         isOpen
           ? "w-72 sm:w-48 sm:border-r sm:border-r-transparent sm:border-r-white md:w-64"
           : "w-12 border-r py-10 sm:w-16",
-        "flex h-full rounded-l-3xl transition-all dark:bg-dark-tertiary",
+        "flex h-full rounded-l-3xl transition-all dark:bg-[#4e519e]",
       )}
     >
       {!isOpen ? (
@@ -97,9 +76,17 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
             </div>
           </div>
           <div className="flex w-full flex-col overflow-auto">
-            <Reorder.Group axis="y" values={entries} onReorder={setEntries}>
-              {entries.map((entry) => (
-                <Reorder.Item key={entry.id} value={entry}>
+            <Reorder.Group
+              axis="y"
+              values={entries || []}
+              onReorder={setEntries}
+            >
+              {entries?.map((entry) => (
+                <Reorder.Item
+                  key={entry.id}
+                  value={entry}
+                  onClick={() => onEntrySelected(entry)}
+                >
                   <SidebarEntry entry={entry} />
                 </Reorder.Item>
               ))}

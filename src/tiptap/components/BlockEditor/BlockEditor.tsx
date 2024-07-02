@@ -13,14 +13,17 @@ import { TableColumnMenu, TableRowMenu } from "@/tiptap/extensions/Table/menus";
 import { TiptapProps } from "./types";
 import { TextMenu } from "../menus/TextMenu";
 import { ContentItemMenu } from "../menus/ContentItemMenu";
+import { Entry } from "@/types/entry";
 
-export const BlockEditor = ({ ydoc }: TiptapProps) => {
+type BlockEditorProps = TiptapProps & { selectedEntry?: Entry };
+
+export const BlockEditor = ({ ydoc, selectedEntry }: BlockEditorProps) => {
   const menuContainerRef = useRef(null);
   if (typeof window === "undefined") {
     return null;
   }
 
-  const { editor } = useBlockEditor();
+  const { editor } = useBlockEditor(selectedEntry);
 
   if (!editor) {
     return null;

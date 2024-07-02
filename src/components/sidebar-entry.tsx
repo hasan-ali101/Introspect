@@ -20,11 +20,15 @@ const SidebarEntry = ({ entry }: SidebarEntryProps) => {
             "shrink-0",
           )}
         />
-        <p className=" truncate text-sm font-semibold">{entry.firstLine}</p>
+        <p className=" truncate text-sm font-semibold">
+          {"This is the first line of an entry"}
+        </p>
       </div>
       <div className="flex gap-2">
-        <p className="text-xs">{entry.createdAt.toLocaleDateString()}</p>
-        <p className="truncate text-xs text-gray-200">{entry.secondLine}</p>
+        <p className="text-xs">{entry.createdAt}</p>
+        <p className="truncate text-xs text-gray-200">
+          {"This is the second line of an entry"}
+        </p>
       </div>
     </div>
   );

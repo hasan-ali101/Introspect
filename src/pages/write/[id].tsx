@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Inter } from "next/font/google";
 import { useRouter } from "next/router";
 import {
   dehydrate,
@@ -12,16 +11,21 @@ import { IBook } from "@/types/book";
 import { GetServerSideProps } from "next";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { useAuth } from "@clerk/nextjs";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Doc as YDoc } from "yjs";
 
 import { BlockEditor } from "@/tiptap/components/BlockEditor";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "@/components/sidebar";
+import getEntries from "@/utils/getEntries";
+import { Entry } from "@/types/entry";
 
 export default function Page() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | undefined>(
+    undefined,
+  );
 
   const ydoc = useMemo(() => new YDoc(), []);
   const { userId } = useAuth();
@@ -32,12 +36,21 @@ export default function Page() {
     staleTime: Infinity,
   });
 
+  const { data: entries } = useQuery({
+    queryKey: ["entries"],
+    queryFn: () => getEntries(router.query.id as string),
+    staleTime: Infinity,
+  });
+
   const router = useRouter();
-  console.log(router.query.id);
 
   const book: IBook | undefined = data?.find(
     (book: IBook) => book.id === router.query.id,
   );
+
+  useEffect(() => {
+    console.log(selectedEntry?.content);
+  }, [selectedEntry]);
 
   return (
     <>
@@ -57,16 +70,22 @@ export default function Page() {
           <Sidebar
             isOpen={sidebarOpen}
             toggleSidebar={() => setSidebarOpen((state) => !state)}
+            bookEntries={entries}
+            onEntrySelected={setSelectedEntry}
           />
           <div
             className={cn(
               sidebarOpen
                 ? "w-0 sm:w-[430px] md:w-[480px] lg:w-[720px]"
                 : "w-64 sm:w-[500px] md:w-[550px]  lg:w-[770px]",
-              " h-full overflow-auto rounded-r-3xl bg-dark-tertiary pt-6 opacity-100 transition-all",
+              " h-full overflow-auto rounded-r-3xl bg-[#696bcabf] pt-6 opacity-100 transition-all",
             )}
           >
-            <BlockEditor hasCollab={false} ydoc={ydoc} />
+            <BlockEditor
+              hasCollab={false}
+              ydoc={ydoc}
+              selectedEntry={selectedEntry}
+            />
           </div>
         </div>
       </div>
@@ -80,6 +99,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const clerkProps = await buildClerkProps(ctx.req);
 
   //TODO: get only the book that is being edited
+  // only get the books if they are not already in cache
   if (!userId) {
     console.log("User not authenticated");
   } else {
@@ -89,6 +109,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       staleTime: Infinity,
     });
   }
+  await queryClient.prefetchQuery({
+    queryKey: ["entries"],
+    queryFn: () => getEntries(ctx.query.id as string),
+    staleTime: Infinity,
+  });
 
   return {
     props: {

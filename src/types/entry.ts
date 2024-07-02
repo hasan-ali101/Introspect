@@ -1,9 +1,8 @@
 export type Entry = {
-  id: number;
-  bookId: number;
-  firstLine: string;
-  secondLine: string;
-  createdAt: Date;
-  updatedAt: Date;
-  favourite: boolean;
+  id: string;
+  bookId: string;
+  content: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  favourite: boolean | null;
 };
