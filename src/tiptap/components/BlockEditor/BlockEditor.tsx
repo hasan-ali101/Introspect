@@ -18,12 +18,12 @@ import { Entry } from "@/types/entry";
 type BlockEditorProps = TiptapProps & { selectedEntry?: Entry };
 
 export const BlockEditor = ({ ydoc, selectedEntry }: BlockEditorProps) => {
+  const { editor } = useBlockEditor(selectedEntry);
+
   const menuContainerRef = useRef(null);
   if (typeof window === "undefined") {
     return null;
   }
-
-  const { editor } = useBlockEditor(selectedEntry);
 
   if (!editor) {
     return null;
