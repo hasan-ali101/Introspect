@@ -37,7 +37,7 @@ import {
   TrailingNode,
   Typography,
   Underline,
-  emojiSuggestion,
+  // emojiSuggestion,
   Columns,
   Column,
   TaskItem,
@@ -129,7 +129,7 @@ export const ExtensionKit = ({
   }),
   Emoji.configure({
     enableEmoticons: true,
-    suggestion: emojiSuggestion,
+    // suggestion: emojiSuggestion,
   }),
   TextAlign.extend({
     addKeyboardShortcuts() {

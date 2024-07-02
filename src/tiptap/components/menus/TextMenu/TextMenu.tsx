@@ -131,7 +131,7 @@ export const TextMenu = ({ editor }: TextMenuProps) => {
         <Popover.Root>
           <Popover.Trigger asChild>
             <MemoButton tooltip="More options">
-              <Icon name="MoreVertical" />
+              <Icon name="MoveVertical" />
             </MemoButton>
           </Popover.Trigger>
           <Popover.Content side="top" asChild>
