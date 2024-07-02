@@ -26,14 +26,17 @@ const Sidebar = ({
 }: SidebarProps) => {
   const [entries, setEntries] = useState(bookEntries);
 
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    if (event.metaKey === true || event.ctrlKey === true) {
-      if (event.key === "b") {
-        event.preventDefault();
-        toggleSidebar();
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.metaKey === true || event.ctrlKey === true) {
+        if (event.key === "b") {
+          event.preventDefault();
+          toggleSidebar();
+        }
       }
-    }
-  }, []);
+    },
+    [toggleSidebar],
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);

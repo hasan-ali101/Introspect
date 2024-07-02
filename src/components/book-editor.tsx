@@ -66,7 +66,7 @@ const BookEditor = ({
         }}
       />
       {isEditing && (
-        <div className="flex h-full min-h-64 w-full flex-col gap-8 px-8 pb-4 pt-10">
+        <div className="min-h-64 flex h-full w-full flex-col gap-8 px-8 pb-4 pt-10">
           <RadioGroup
             onValueChange={(e) => onNotebookSelect(book.id, e)}
             className="grid-flow-col"
@@ -144,10 +144,11 @@ const BookEditor = ({
             </div>
           </RadioGroup>
           <div className="flex w-full justify-between">
-            {defaultImages.map((image) => {
+            {defaultImages.map((image, index) => {
               if (image === undefined) {
                 return (
                   <div
+                    key={index}
                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border"
                     onClick={() => onImageSelect(book.id, image)}
                   >
@@ -204,9 +205,12 @@ const BookEditor = ({
                   }}
                 >
                   {book.uploadedImage && (
-                    <img
+                    <Image
+                      className="h-full w-full rounded-md object-cover"
                       src={book.uploadedImage}
-                      className="h-full w-full rounded-md"
+                      width={100}
+                      height={100}
+                      alt={book.uploadedImage}
                     />
                   )}
                 </div>

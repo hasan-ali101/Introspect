@@ -22,35 +22,30 @@ import getEntries from "@/utils/getEntries";
 import { Entry } from "@/types/entry";
 
 export default function Page() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedEntry, setSelectedEntry] = useState<Entry | undefined>(
-    undefined,
-  );
-
-  const ydoc = useMemo(() => new YDoc(), []);
   const { userId } = useAuth();
+  const router = useRouter();
 
   const { data } = useQuery({
     queryKey: ["books"],
     queryFn: () => getBooks(userId as string),
     staleTime: Infinity,
   });
-
-  const { data: entries } = useQuery({
-    queryKey: ["entries"],
+  const { data: entries, isLoading } = useQuery({
+    queryKey: ["entries", router.query.id as string],
     queryFn: () => getEntries(router.query.id as string),
     staleTime: Infinity,
   });
 
-  const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | undefined>();
+
+  const ydoc = useMemo(() => new YDoc(), []);
+
+  console.log(isLoading, entries);
 
   const book: IBook | undefined = data?.find(
     (book: IBook) => book.id === router.query.id,
   );
-
-  useEffect(() => {
-    console.log(selectedEntry?.content);
-  }, [selectedEntry]);
 
   return (
     <>
@@ -110,7 +105,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
   }
   await queryClient.prefetchQuery({
-    queryKey: ["entries"],
+    queryKey: ["entries", ctx.query.id as string],
     queryFn: () => getEntries(ctx.query.id as string),
     staleTime: Infinity,
   });
