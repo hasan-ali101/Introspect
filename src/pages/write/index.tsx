@@ -57,10 +57,6 @@ export default function Write() {
     undefined,
   );
 
-  console.log("data", data);
-  console.log("isLoading", isLoading);
-  console.log("isError", isError);
-
   const addBookMutation = useMutation({
     mutationFn: (book: IBook) => addNewBook(book),
     onSuccess: async () => {

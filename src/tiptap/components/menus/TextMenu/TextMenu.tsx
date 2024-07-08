@@ -37,6 +37,7 @@ export const TextMenu = ({ editor }: TextMenuProps) => {
       pluginKey="textMenu"
       shouldShow={states.shouldShow}
       updateDelay={100}
+      className="overflow-scroll rounded-md"
     >
       <Toolbar.Wrapper>
         <MemoContentTypePicker options={blockOptions} />
@@ -134,7 +135,7 @@ export const TextMenu = ({ editor }: TextMenuProps) => {
               <Icon name="MoveVertical" />
             </MemoButton>
           </Popover.Trigger>
-          <Popover.Content side="top" asChild>
+          <Popover.Content side="bottom" asChild>
             <Toolbar.Wrapper>
               <MemoButton
                 tooltip="Subscript"

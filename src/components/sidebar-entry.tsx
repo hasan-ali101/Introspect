@@ -4,13 +4,17 @@ import { Entry } from "@/types/entry";
 
 type SidebarEntryProps = {
   entry: Entry;
+  className?: string;
 };
 
-const SidebarEntry = ({ entry }: SidebarEntryProps) => {
+const SidebarEntry = ({ entry, className }: SidebarEntryProps) => {
   return (
     <div
       key={entry.id}
-      className="mx-3 flex cursor-pointer flex-col gap-3 border-b border-gray-300 px-2 py-6 backdrop-blur-md hover:bg-white/10"
+      className={cn(
+        className,
+        "mx-3 flex cursor-pointer flex-col gap-3 border-b border-gray-300 px-2 py-6 backdrop-blur-md hover:bg-white/10",
+      )}
     >
       <div className="flex items-center gap-2">
         <Star
@@ -20,7 +24,7 @@ const SidebarEntry = ({ entry }: SidebarEntryProps) => {
             "shrink-0",
           )}
         />
-        <p className=" truncate text-sm font-semibold">
+        <p className="truncate text-sm font-semibold">
           {"This is the first line of an entry"}
         </p>
       </div>

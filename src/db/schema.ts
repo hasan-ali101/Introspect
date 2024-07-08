@@ -16,13 +16,8 @@ export const entries = pgTable("entries", {
   id: text("id").primaryKey().notNull().unique(),
   bookId: text("bookId").notNull(),
   content: text("content"),
-  createdAt: date("createdAt", { mode: "string" }),
-  updatedAt: date("updatedAt", { mode: "string" }),
+  createdAt: text("createdAt"),
+  updatedAt: text("updatedAt"),
   favourite: boolean("favourite"),
-});
-
-export const entryOrder = pgTable("entryOrder", {
-  id: text("id").primaryKey().notNull().unique(),
-  bookId: text("bookId").notNull(),
-  order: integer("order"),
+  index: integer("index"),
 });

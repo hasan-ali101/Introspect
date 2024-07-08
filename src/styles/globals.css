@@ -4,9 +4,10 @@
 
 
   
-  /* * {
-      scroll-behavior: smooth;
-  } */
+  body {
+      scrollbar-color: #696aca80 transparent;
+  }
+
 
   .ProseMirror {
     @apply caret-black dark:caret-white outline-0 pl-12 md:pl-24 py-8 z-0 pr-12 lg:pr-14;

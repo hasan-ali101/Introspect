@@ -24,15 +24,16 @@ import { Entry } from "@/types/entry";
 export default function Page() {
   const { userId } = useAuth();
   const router = useRouter();
+  const bookId = router.query.id as string;
 
   const { data } = useQuery({
     queryKey: ["books"],
     queryFn: () => getBooks(userId as string),
     staleTime: Infinity,
   });
-  const { data: entries, isLoading } = useQuery({
-    queryKey: ["entries", router.query.id as string],
-    queryFn: () => getEntries(router.query.id as string),
+  const { data: entries } = useQuery({
+    queryKey: ["entries", bookId],
+    queryFn: () => getEntries(bookId),
     staleTime: Infinity,
   });
 
@@ -41,10 +42,8 @@ export default function Page() {
 
   const ydoc = useMemo(() => new YDoc(), []);
 
-  console.log(isLoading, entries);
-
   const book: IBook | undefined = data?.find(
-    (book: IBook) => book.id === router.query.id,
+    (book: IBook) => book.id === bookId,
   );
 
   return (
@@ -67,16 +66,23 @@ export default function Page() {
             toggleSidebar={() => setSidebarOpen((state) => !state)}
             bookEntries={entries}
             onEntrySelected={setSelectedEntry}
+            selectedEntryId={selectedEntry?.id}
+            bookId={bookId}
           />
           <div
             className={cn(
               sidebarOpen
                 ? "w-0 sm:w-[430px] md:w-[480px] lg:w-[720px]"
                 : "w-64 sm:w-[500px] md:w-[550px]  lg:w-[770px]",
-              " h-full overflow-auto rounded-r-3xl bg-[#696bcabf] pt-6 opacity-100 transition-all",
+              " h-full overflow-visible overflow-y-clip rounded-r-3xl bg-[#696bcabf] pb-10 pt-6 opacity-100 md:transition-all",
             )}
           >
             <BlockEditor
+              className={
+                sidebarOpen
+                  ? "w-0 sm:w-[430px] md:w-[480px] lg:w-[720px]"
+                  : "w-64 sm:w-[500px] md:w-[550px]  lg:w-[770px]"
+              }
               hasCollab={false}
               ydoc={ydoc}
               selectedEntry={selectedEntry}
@@ -92,6 +98,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
   const queryClient = new QueryClient();
   const clerkProps = await buildClerkProps(ctx.req);
+  const bookId = ctx.query.id as string;
 
   //TODO: get only the book that is being edited
   // only get the books if they are not already in cache
@@ -105,8 +112,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     });
   }
   await queryClient.prefetchQuery({
-    queryKey: ["entries", ctx.query.id as string],
-    queryFn: () => getEntries(ctx.query.id as string),
+    queryKey: ["entries", bookId],
+    queryFn: () => getEntries(bookId),
     staleTime: Infinity,
   });
 

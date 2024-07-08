@@ -111,7 +111,7 @@ export default function Nav() {
         </div>
       </div>
       <div className="relative h-10 w-full ">
-        <div className="absolute z-10 hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-white bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider  shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12">
+        <div className="absolute hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-white bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider  shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12">
           <Link href="/write" className="hover:cursor-pointer">
             Write
           </Link>
