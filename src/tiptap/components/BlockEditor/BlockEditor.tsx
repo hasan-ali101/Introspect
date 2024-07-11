@@ -16,11 +16,7 @@ type BlockEditorProps = TiptapProps & {
   className?: string;
 };
 
-export const BlockEditor = ({
-  ydoc,
-  selectedEntry,
-  className,
-}: BlockEditorProps) => {
+export const BlockEditor = ({ selectedEntry, className }: BlockEditorProps) => {
   const { editor } = useBlockEditor(selectedEntry);
 
   const menuContainerRef = useRef(null);

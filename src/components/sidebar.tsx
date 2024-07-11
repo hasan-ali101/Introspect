@@ -13,7 +13,8 @@ import { cn } from "@/lib/utils";
 import SidebarEntry from "@/components/sidebar-entry";
 import { Entry } from "@/types/entry";
 import { formatDate } from "@/utils/formatDate";
-import addNewEntry from "@/utils/addNewEntry";
+import addNewEntry from "@/utils/queries/addNewEntry";
+import { updateEntryOrder } from "@/utils/queries/updateEntryOrder";
 
 type SidebarProps = {
   isOpen: Boolean;
@@ -69,21 +70,19 @@ const Sidebar = ({
   }, [handleKeyPress]);
 
   const createNewEntry = () => {
-    return () => {
-      const newEntry = {
-        id: uuidv4(),
-        bookId: bookId,
-        content: Math.random().toString(36).substring(7),
-        createdAt: formatDate(new Date()),
-        updatedAt: formatDate(new Date()),
-        favourite: false,
-        index: 0,
-      };
-
-      addEntryMutation.mutate(newEntry);
-
-      onEntrySelected(newEntry);
+    const newEntry = {
+      id: uuidv4(),
+      bookId: bookId,
+      content: Math.random().toString(36).substring(7),
+      createdAt: formatDate(new Date()),
+      updatedAt: formatDate(new Date()),
+      favourite: false,
+      index: 0,
     };
+
+    addEntryMutation.mutate(newEntry);
+
+    onEntrySelected(newEntry);
   };
 
   return (
@@ -98,7 +97,7 @@ const Sidebar = ({
       {!isOpen ? (
         <div className="flex w-full flex-col items-center gap-6">
           <CirclePlus
-            onClick={createNewEntry()}
+            onClick={() => createNewEntry()}
             className="h-8 w-8 cursor-pointer rounded-md p-1 text-gray-200 hover:bg-white/20"
           />
           <PanelLeftOpen
@@ -111,7 +110,7 @@ const Sidebar = ({
           <div className="flex h-10 w-full items-center justify-between gap-6 border-b px-3 py-6">
             <div
               className="flex cursor-pointer items-center gap-1 rounded-md border-[0.5px] p-1 text-xs hover:bg-white/20"
-              onClick={createNewEntry()}
+              onClick={() => createNewEntry()}
             >
               <CirclePlus className="text-gray-200" />
               <p>New entry</p>
@@ -129,10 +128,11 @@ const Sidebar = ({
               axis="y"
               values={entries || []}
               onReorder={(newOrder) => {
-                setEntries(newOrder);
                 newOrder.forEach((entry, index) => {
                   entry.index = index;
                 });
+                updateEntryOrder(bookId, newOrder);
+                setEntries(newOrder);
                 console.log(newOrder); // update entries in the database
               }}
             >

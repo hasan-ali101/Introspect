@@ -26,10 +26,10 @@ import {
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import getBooks, { useBooksQuery } from "@/utils/getBooks";
+import getBooks, { useBooksQuery } from "@/utils/queries/getBooks";
 import { useAuth } from "@clerk/nextjs";
-import addNewBook from "@/utils/addNewBook";
-import { updateBook } from "@/utils/updateBook";
+import addNewBook from "@/utils/queries/addNewBook";
+import { updateBook } from "@/utils/queries/updateBook";
 import { v4 as uuidv4 } from "uuid";
 import { SignedIn, SignInButton, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";

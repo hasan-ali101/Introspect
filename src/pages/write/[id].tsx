@@ -6,7 +6,7 @@ import {
   useQuery,
   // useQueryClient,
 } from "@tanstack/react-query";
-import getBooks from "@/utils/getBooks";
+import getBooks from "@/utils/queries/getBooks";
 import { IBook } from "@/types/book";
 import { GetServerSideProps } from "next";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
@@ -18,7 +18,7 @@ import { BlockEditor } from "@/tiptap/components/BlockEditor";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "@/components/sidebar";
-import getEntries from "@/utils/getEntries";
+import getEntries from "@/utils/queries/getEntries";
 import { Entry } from "@/types/entry";
 
 export default function Page() {
@@ -38,7 +38,9 @@ export default function Page() {
   });
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedEntry, setSelectedEntry] = useState<Entry | undefined>();
+  const [selectedEntry, setSelectedEntry] = useState<Entry | undefined>(
+    entries?.[0],
+  );
 
   const ydoc = useMemo(() => new YDoc(), []);
 

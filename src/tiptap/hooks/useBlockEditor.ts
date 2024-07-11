@@ -1,9 +1,10 @@
 import { Editor, useEditor } from "@tiptap/react";
-
 import { ExtensionKit } from "@/tiptap/extensions/extension-kit";
-import { initialContent } from "@/tiptap/lib/data/initialContent";
 import { Entry } from "@/types/entry";
 import { useEffect } from "react";
+
+import { updateEntry } from "@/utils/queries/updateEntry";
+import { initialContent } from "@/tiptap/lib/data/initialContent";
 
 declare global {
   interface Window {
@@ -20,9 +21,9 @@ export const useBlockEditor = (selectedEntry?: Entry) => {
 
   const editor = useEditor({
     autofocus: true,
-    // content: selectedEntry?.content || initialContent,
+    content: selectedEntry?.content,
     onUpdate: ({ editor }) => {
-      window.localStorage.setItem("editor-content", editor.getHTML());
+      updateEntry(selectedEntry?.id as string, editor.getHTML());
     },
     extensions: [...ExtensionKit({})],
     editorProps: {

@@ -1,5 +1,3 @@
-import { index } from "drizzle-orm/mysql-core";
-
 export type Entry = {
   id: string;
   bookId: string;
