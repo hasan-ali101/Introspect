@@ -4,7 +4,6 @@ import { Entry } from "@/types/entry";
 import { useEffect } from "react";
 
 import { debouncedUpdateEntry } from "@/utils/queries/updateEntry";
-import { initialContent } from "@/tiptap/lib/data/initialContent";
 
 declare global {
   interface Window {
@@ -13,12 +12,6 @@ declare global {
 }
 
 export const useBlockEditor = (selectedEntry?: Entry) => {
-  useEffect(() => {
-    if (selectedEntry) {
-      editor?.commands.setContent(selectedEntry.content);
-    }
-  }, [selectedEntry]);
-
   const editor = useEditor({
     autofocus: true,
     content: selectedEntry?.content,
@@ -35,6 +28,12 @@ export const useBlockEditor = (selectedEntry?: Entry) => {
       },
     },
   });
+
+  useEffect(() => {
+    if (selectedEntry) {
+      editor?.commands.setContent(selectedEntry.content);
+    }
+  }, [selectedEntry]);
 
   const characterCount = editor?.storage.characterCount || {
     characters: () => 0,

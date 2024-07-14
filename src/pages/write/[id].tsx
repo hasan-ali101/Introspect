@@ -69,6 +69,7 @@ export default function Page() {
               <Pencil className="absolute right-1 top-2 h-4 w-4" />
               <input
                 maxLength={50}
+                autoFocus
                 type="text"
                 placeholder="Book Title"
                 className="w-full border-b-2 border-gray-300 bg-transparent pl-2 pr-6 text-xl outline-slate-100  md:text-2xl"
