@@ -241,7 +241,7 @@ export default function Write() {
                             <Link
                               onClick={(e) => {
                                 isEditing && e.preventDefault();
-                                setPageLoading(true);
+                                !isEditing && setPageLoading(true);
                               }}
                               href={`/write/${book.id}`}
                             >

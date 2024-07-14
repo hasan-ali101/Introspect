@@ -3,7 +3,7 @@ import { ExtensionKit } from "@/tiptap/extensions/extension-kit";
 import { Entry } from "@/types/entry";
 import { useEffect } from "react";
 
-import { updateEntry } from "@/utils/queries/updateEntry";
+import { debouncedUpdateEntry } from "@/utils/queries/updateEntry";
 import { initialContent } from "@/tiptap/lib/data/initialContent";
 
 declare global {
@@ -23,7 +23,7 @@ export const useBlockEditor = (selectedEntry?: Entry) => {
     autofocus: true,
     content: selectedEntry?.content,
     onUpdate: ({ editor }) => {
-      updateEntry(selectedEntry?.id as string, editor.getHTML());
+      debouncedUpdateEntry(selectedEntry?.id as string, editor.getHTML());
     },
     extensions: [...ExtensionKit({})],
     editorProps: {

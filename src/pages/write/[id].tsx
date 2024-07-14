@@ -11,14 +11,15 @@ import { IBook } from "@/types/book";
 import { GetServerSideProps } from "next";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { useAuth } from "@clerk/nextjs";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Doc as YDoc } from "yjs";
 
 import { BlockEditor } from "@/tiptap/components/BlockEditor";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "@/components/sidebar";
 import getEntries from "@/utils/queries/getEntries";
+import { updateBook } from "@/utils/queries/updateBook";
 import { Entry } from "@/types/entry";
 
 export default function Page() {
@@ -31,6 +32,10 @@ export default function Page() {
     queryFn: () => getBooks(userId as string),
     staleTime: Infinity,
   });
+  const book: IBook | undefined = data?.find(
+    (book: IBook) => book.id === bookId,
+  );
+
   const { data: entries } = useQuery({
     queryKey: ["entries", bookId],
     queryFn: () => getEntries(bookId),
@@ -41,12 +46,14 @@ export default function Page() {
   const [selectedEntry, setSelectedEntry] = useState<Entry | undefined>(
     entries?.[0],
   );
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [bookTitle, setBookTitle] = useState(book?.title);
 
   const ydoc = useMemo(() => new YDoc(), []);
 
-  const book: IBook | undefined = data?.find(
-    (book: IBook) => book.id === bookId,
-  );
+  const updateTitle = (title: string) => {
+    updateBook({ ...book, title } as IBook);
+  };
 
   return (
     <>
@@ -57,12 +64,37 @@ export default function Page() {
               <ArrowLeft /> <p>back to all books</p>
             </div>
           </Link>
-          <h1 className="p-4 text-xl font-bold  md:text-2xl">
-            Title: {book?.title}
-          </h1>
+          {editingTitle ? (
+            <div className="relative">
+              <Pencil className="absolute right-1 top-2 h-4 w-4" />
+              <input
+                maxLength={50}
+                type="text"
+                placeholder="Book Title"
+                className="w-full border-b-2 border-gray-300 bg-transparent pl-2 pr-6 text-xl outline-slate-100  md:text-2xl"
+                value={bookTitle}
+                onBlur={(e) => {
+                  setEditingTitle(false), updateTitle(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter")
+                    setEditingTitle(false), updateTitle(e.target.value);
+                }}
+                onChange={(e) => setBookTitle(e.target.value)}
+              />
+            </div>
+          ) : (
+            <h1
+              className="p-4 text-xl font-bold hover:underline md:text-2xl"
+              onClick={() => setEditingTitle(true)}
+            >
+              {bookTitle}
+            </h1>
+          )}
+
           <div className="w-40"></div>
         </div>
-        <div className="flex h-[600px] rounded-3xl border ">
+        <div className="flex h-[750px] rounded-3xl border ">
           <Sidebar
             isOpen={sidebarOpen}
             toggleSidebar={() => setSidebarOpen((state) => !state)}

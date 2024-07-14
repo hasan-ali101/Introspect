@@ -142,6 +142,9 @@ const Sidebar = ({
                   value={entry}
                   onClick={() => {
                     onEntrySelected(entry);
+                    queryClient.invalidateQueries({
+                      queryKey: ["entries", bookId],
+                    });
                   }}
                 >
                   <SidebarEntry
