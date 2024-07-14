@@ -24,7 +24,7 @@ export default function Nav() {
     <div
       className={`bg-[#a7bdea] text-white  dark:bg-dark-primary ${montserrat.className}`}
     >
-      <div className="flex h-16 w-full items-center justify-between border-b-2 border-white  bg-gradient-to-t px-2 py-12 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:p-10">
+      <div className="flex h-16 w-full items-center justify-between border-b-2 border-white  bg-gradient-to-t px-4 py-12 shadow-xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:px-6">
         <Link
           href="/write"
           className="flex items-center gap-2 text-lg md:gap-2 md:text-xl "
@@ -44,7 +44,7 @@ export default function Nav() {
           <div className="h-8 w-8">
             <ModeToggle />
           </div>
-          <div className="hidden items-center md:flex">
+          <div className="flex items-center">
             <SignedOut>
               <SignInButton />
             </SignedOut>
@@ -52,7 +52,7 @@ export default function Nav() {
               <UserButton />
             </SignedIn>
           </div>
-          <Sheet>
+          {/* <Sheet>
             <SheetTrigger asChild>
               <Menu className="h-8 w-8 md:hidden" />
             </SheetTrigger>
@@ -107,24 +107,22 @@ export default function Nav() {
                 </SignedIn>
               </div>
             </SheetContent>
-          </Sheet>
+          </Sheet> */}
         </div>
       </div>
-      <div className="relative h-10 w-full ">
-        <div className="absolute hidden h-10 w-1/2 items-center justify-between rounded-br-lg border-b-2 border-r border-white bg-gradient-to-t pl-6 pr-8 text-sm font-light tracking-wider  shadow-2xl dark:border-white dark:from-[#464775] dark:to-dark-primary md:flex lg:px-12">
-          <Link href="/write" className="hover:cursor-pointer">
-            Write
-          </Link>
-          <Link href="/meditate" className="hover:cursor-pointer">
-            Meditate
-          </Link>
-          <Link href="/read" className="hover:cursor-pointer">
-            Read
-          </Link>
-          <Link href="/read" className="hover:cursor-pointer">
-            Discuss
-          </Link>
-        </div>
+      <div className="flex h-10 items-center justify-center border-b  border-white bg-gradient-to-t text-sm font-light tracking-wider shadow-2xl dark:border-white dark:from-[#464775]  dark:to-dark-primary md:w-[600px] md:rounded-br-lg md:border-b-2 md:border-r ">
+        <Link
+          href="/write"
+          className="flex h-full w-1/2 items-center justify-center border-r p-2 text-center transition-all hover:cursor-pointer hover:bg-white/10"
+        >
+          Writing Studio
+        </Link>
+        <Link
+          href="/meditate"
+          className="flex h-full w-1/2 items-center justify-center text-center transition-all hover:cursor-pointer hover:bg-white/10"
+        >
+          Meditation Centre
+        </Link>
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Nav />
             <main
               className={cn(
-                `relative z-0 flex min-h-screen flex-col items-center overflow-clip bg-gradient-to-t from-[white] to-light-primary text-white dark:from-dark-secondary dark:to-dark-primary 2xl:pt-10`,
+                `-pb-8 relative z-0 flex min-h-screen flex-col items-center overflow-clip bg-gradient-to-t from-[white] to-light-primary px-4 pt-12 text-white dark:from-dark-secondary dark:to-dark-primary`,
                 montserrat.className,
               )}
             >
