@@ -1,3 +1,5 @@
+import * as cheerio from "cheerio";
+
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Entry } from "@/types/entry";
@@ -8,6 +10,14 @@ type SidebarEntryProps = {
 };
 
 const SidebarEntry = ({ entry, className }: SidebarEntryProps) => {
+  const $ = cheerio.load(entry.content || "");
+  const text = $("p, pre, h1, h2, h3, h4, h5, h6, div, span, code");
+  let lines: string[] = [];
+  text.each((_, el) => {
+    if ($(el).text().trim() === "") return;
+    lines.push($(el).text());
+  });
+
   return (
     <div
       key={entry.id}
@@ -25,14 +35,12 @@ const SidebarEntry = ({ entry, className }: SidebarEntryProps) => {
           )}
         />
         <p className="truncate text-sm font-semibold">
-          {"This is the first line of an entry"}
+          {lines[0] || "New Entry"}
         </p>
       </div>
       <div className="flex gap-2">
         <p className="text-xs">{entry.createdAt}</p>
-        <p className="truncate text-xs text-gray-200">
-          {"This is the second line of an entry"}
-        </p>
+        <p className="truncate text-xs text-gray-200">{lines[1]}</p>
       </div>
     </div>
   );

@@ -63,14 +63,12 @@ export default function Write() {
     mutationFn: (book: IBook) => addNewBook(book),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["books"] });
-      console.log(JSON.stringify(books) === JSON.stringify(data));
     },
   });
   const updateBookMutation = useMutation({
     mutationFn: (book: IBook) => updateBook(book),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["books"] });
-      console.log(JSON.stringify(books) === JSON.stringify(data));
     },
   });
 
@@ -147,7 +145,6 @@ export default function Write() {
   };
 
   const saveChanges = (book: IBook) => {
-    console.log("saving changes");
     if (book.id.startsWith("book")) {
       updateBookMutation.mutate(book);
     } else {

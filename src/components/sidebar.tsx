@@ -73,7 +73,7 @@ const Sidebar = ({
     const newEntry = {
       id: uuidv4(),
       bookId: bookId,
-      content: Math.random().toString(36).substring(7),
+      content: "",
       createdAt: formatDate(new Date()),
       updatedAt: formatDate(new Date()),
       favourite: false,
@@ -133,7 +133,6 @@ const Sidebar = ({
                 });
                 updateEntryOrder(bookId, newOrder);
                 setEntries(newOrder);
-                console.log(newOrder); // update entries in the database
               }}
             >
               {entries?.map((entry) => (
