@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -8,6 +8,15 @@ import {
 import { Reorder } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { cn } from "@/lib/utils";
 import SidebarEntry from "@/components/sidebar-entry";
@@ -28,21 +37,15 @@ type SidebarProps = {
 const Sidebar = ({
   isOpen,
   toggleSidebar,
-  bookEntries,
+  bookEntries = [],
   onEntrySelected,
   bookId,
   selectedEntryId,
 }: SidebarProps) => {
   const [entries, setEntries] = useState(bookEntries);
+  const [orderBy, setOrderBy] = useState("custom");
 
   const queryClient = useQueryClient();
-
-  const addEntryMutation = useMutation({
-    mutationFn: (entry: Entry) => addNewEntry(entry),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["entries", bookId] });
-    },
-  });
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -56,10 +59,30 @@ const Sidebar = ({
     [toggleSidebar],
   );
 
-  useEffect(() => {
-    const orderedEntries = bookEntries?.sort((a, b) => a.index - b.index) || [];
-    setEntries(orderedEntries);
-  }, [bookEntries]);
+  const sortByDate = (array: Entry[]): Entry[] => {
+    function parseDate(dateString: string) {
+      return new Date(dateString);
+    }
+
+    array?.sort((a, b) => {
+      return (
+        parseDate(b.createdAt!).getTime() - parseDate(a.createdAt!).getTime()
+      );
+    });
+
+    return array;
+  };
+
+  const sortByFavourites = (array: Entry[]): Entry[] => {
+    const favourites = sortByDate(
+      array.filter((entry) => entry.favourite === true),
+    );
+    const nonFavourites = sortByDate(
+      array.filter((entry) => entry.favourite === false),
+    );
+
+    return [...favourites, ...nonFavourites];
+  };
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
@@ -69,21 +92,40 @@ const Sidebar = ({
     };
   }, [handleKeyPress]);
 
+  const addEntryMutation = useMutation({
+    mutationFn: (entry: Entry) => addNewEntry(entry),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["entries", bookId] });
+    },
+  });
+
   const createNewEntry = () => {
     const newEntry = {
       id: uuidv4(),
       bookId: bookId,
       content: "",
-      createdAt: formatDate(new Date()),
-      updatedAt: formatDate(new Date()),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       favourite: false,
       index: 0,
     };
-
     addEntryMutation.mutate(newEntry);
-
     onEntrySelected(newEntry);
   };
+
+  useEffect(() => {
+    if (orderBy === "custom") {
+      const orderedEntries = bookEntries.sort((a, b) => a.index - b.index);
+      console.log(orderedEntries);
+      setEntries(orderedEntries);
+    } else if (orderBy === "date-added") {
+      const orderedEntries = sortByDate(bookEntries);
+      setEntries(orderedEntries);
+    } else if (orderBy === "favourites") {
+      const orderedEntries = sortByFavourites(bookEntries);
+      setEntries(orderedEntries);
+    }
+  }, [bookEntries]);
 
   return (
     <div
@@ -116,7 +158,44 @@ const Sidebar = ({
               <p>New entry</p>
             </div>
             <div className="flex items-center gap-1">
-              <ArrowDownWideNarrow className="h-8 w-8  cursor-pointer rounded-md p-1 text-gray-200 hover:bg-white/20" />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <ArrowDownWideNarrow className="h-8 w-8  cursor-pointer rounded-md p-1 text-gray-200 hover:bg-white/20" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="font-monteserrat w-40">
+                  <DropdownMenuLabel>Order By:</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuRadioGroup
+                    value={orderBy}
+                    onValueChange={(newOrderBy) => {
+                      setOrderBy(newOrderBy);
+                      if (newOrderBy === "custom") {
+                        const orderedEntries =
+                          bookEntries?.sort((a, b) => a.index - b.index) || [];
+                        setEntries(orderedEntries);
+                      } else if (newOrderBy === "date-added") {
+                        const entriesByDate = sortByDate(bookEntries);
+                        setEntries(entriesByDate);
+                      } else if (newOrderBy === "favourites") {
+                        const entriesByFavourites =
+                          sortByFavourites(bookEntries);
+                        setEntries(entriesByFavourites);
+                      }
+                    }}
+                  >
+                    <DropdownMenuRadioItem value="custom">
+                      Drag and drop
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="date-added">
+                      Date Added
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="favourites">
+                      Favourites
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <PanelLeftClose
                 onClick={() => toggleSidebar()}
                 className="h-8 w-8  cursor-pointer rounded-md p-1 text-gray-200 hover:bg-white/20"
@@ -128,15 +207,18 @@ const Sidebar = ({
               axis="y"
               values={entries || []}
               onReorder={(newOrder) => {
+                if (orderBy !== "custom") return;
                 newOrder.forEach((entry, index) => {
                   entry.index = index;
                 });
                 updateEntryOrder(bookId, newOrder);
+                console.log("error");
                 setEntries(newOrder);
               }}
             >
               {entries?.map((entry) => (
                 <Reorder.Item
+                  dragListener={orderBy === "custom"}
                   key={entry.id}
                   value={entry}
                   onClick={() => {

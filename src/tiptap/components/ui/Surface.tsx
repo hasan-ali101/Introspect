@@ -1,5 +1,11 @@
 import { cn } from "@/lib/utils";
 import { HTMLProps, forwardRef } from "react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+});
 
 export type SurfaceProps = HTMLProps<HTMLDivElement> & {
   withShadow?: boolean;
@@ -13,9 +19,10 @@ export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
   ) => {
     const surfaceClass = cn(
       className,
-      "bg-white rounded-lg dark:bg-dark-primary dark:text-white text-montserrat",
+      montserrat.className,
+      "bg-white rounded-lg dark:bg-dark-primary dark:bg-[#595b9e] dark:text-white",
       withShadow ? "shadow-sm" : "",
-      withBorder ? "border border-neutral-200 dark:border-neutral-800" : "",
+      withBorder ? "border border-neutral-200 dark:border-neutral-300" : "",
     );
 
     return (

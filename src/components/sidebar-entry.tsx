@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Entry } from "@/types/entry";
+import { formatDate } from "@/utils/formatDate";
 
 type SidebarEntryProps = {
   entry: Entry;
@@ -28,10 +29,14 @@ const SidebarEntry = ({ entry, className }: SidebarEntryProps) => {
     >
       <div className="flex items-center gap-2">
         <Star
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log("clicked");
+          }}
           size={16}
           className={cn(
-            entry.favourite && " border-none fill-yellow-400",
-            "shrink-0",
+            entry.favourite && "border-none fill-yellow-400",
+            "shrink-0 hover:scale-125",
           )}
         />
         <p className="truncate text-sm font-semibold">
@@ -39,7 +44,9 @@ const SidebarEntry = ({ entry, className }: SidebarEntryProps) => {
         </p>
       </div>
       <div className="flex gap-2">
-        <p className="text-xs">{entry.createdAt}</p>
+        <p className="text-xs">
+          {formatDate(new Date(entry.createdAt as string))}
+        </p>
         <p className="truncate text-xs text-gray-200">{lines[1]}</p>
       </div>
     </div>

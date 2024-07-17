@@ -103,7 +103,7 @@ export const TextMenu = ({ editor }: TextMenuProps) => {
               <Icon name="Highlighter" />
             </MemoButton>
           </Popover.Trigger>
-          <Popover.Content side="top" sideOffset={8} asChild>
+          <Popover.Content side="bottom" sideOffset={8} asChild>
             <Surface className="p-1">
               <MemoColorPicker
                 color={states.currentHighlight}
@@ -119,7 +119,7 @@ export const TextMenu = ({ editor }: TextMenuProps) => {
               <Icon name="Palette" />
             </MemoButton>
           </Popover.Trigger>
-          <Popover.Content side="top" sideOffset={8} asChild>
+          <Popover.Content side="bottom" sideOffset={8} asChild>
             <Surface className="p-1">
               <MemoColorPicker
                 color={states.currentColor}

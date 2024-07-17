@@ -35,10 +35,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       variant === "primary" &&
         cn(
-          "text-white bg-black border-black dark:text-black dark:bg-white dark:border-white",
+          "text-white bg-black border-black dark:text-black dark:bg-white dark:border-white dark:text-white",
           !disabled &&
             !active &&
-            "hover:bg-neutral-800 active:bg-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300",
+            "hover:bg-neutral-800 active:bg-neutral-900 dark:hover:bg-neutral-200/20  dark:active:bg-neutral-300",
           active && cn("bg-neutral-900 dark:bg-neutral-300", activeClassname),
         ),
 

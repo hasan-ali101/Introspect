@@ -1,14 +1,12 @@
 import { debounce } from "lodash";
 
-export const updateEntry = (entryId: string, content: string) => {
-  const currentDate = new Date();
-
-  fetch(`/api/entry/${entryId}`, {
+export const updateEntry = (entryId: string, favourite: boolean) => {
+  fetch(`/api/entry/favourite/${entryId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ content, currentDate }),
+    body: JSON.stringify({ favourite }),
   });
 };
 

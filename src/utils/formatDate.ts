@@ -13,5 +13,5 @@ export function formatDate(date: Date) {
   }
 
   // Return the formatted date
-  return month + "/" + day + "/" + year;
+  return day + "/" + month + "/" + year;
 }
