@@ -16,7 +16,7 @@ export const updateBook = async (book: IBook) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error("Fetch error updating book:", error);
   }
 };
 

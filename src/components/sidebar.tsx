@@ -21,7 +21,6 @@ import {
 import { cn } from "@/lib/utils";
 import SidebarEntry from "@/components/sidebar-entry";
 import { Entry } from "@/types/entry";
-import { formatDate } from "@/utils/formatDate";
 import addNewEntry from "@/utils/queries/addNewEntry";
 import { updateEntryOrder } from "@/utils/queries/updateEntryOrder";
 
@@ -94,7 +93,21 @@ const Sidebar = ({
 
   const addEntryMutation = useMutation({
     mutationFn: (entry: Entry) => addNewEntry(entry),
-    onSuccess: async () => {
+    onMutate: async (newEntry: Entry) => {
+      await queryClient.cancelQueries({ queryKey: ["entries", bookId] });
+
+      const previousEntries = queryClient.getQueryData(["entries", bookId]);
+
+      queryClient.setQueryData(["entries", bookId], (old: Entry[]) => {
+        return [newEntry, ...old];
+      });
+
+      return { previousEntries };
+    },
+    onError: (context: any) => {
+      queryClient.setQueryData(["entries", bookId], context.previousEntries);
+    },
+    onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ["entries", bookId] });
     },
   });
@@ -116,7 +129,6 @@ const Sidebar = ({
   useEffect(() => {
     if (orderBy === "custom") {
       const orderedEntries = bookEntries.sort((a, b) => a.index - b.index);
-      console.log(orderedEntries);
       setEntries(orderedEntries);
     } else if (orderBy === "date-added") {
       const orderedEntries = sortByDate(bookEntries);
@@ -212,7 +224,6 @@ const Sidebar = ({
                   entry.index = index;
                 });
                 updateEntryOrder(bookId, newOrder);
-                console.log("error");
                 setEntries(newOrder);
               }}
             >

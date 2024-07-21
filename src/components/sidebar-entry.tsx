@@ -1,9 +1,11 @@
 import * as cheerio from "cheerio";
-
 import { Star } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Entry } from "@/types/entry";
 import { formatDate } from "@/utils/formatDate";
+import { addFavourite } from "@/utils/queries/addFavourite";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 type SidebarEntryProps = {
   entry: Entry;
@@ -11,12 +13,52 @@ type SidebarEntryProps = {
 };
 
 const SidebarEntry = ({ entry, className }: SidebarEntryProps) => {
+  const queryClient = useQueryClient();
   const $ = cheerio.load(entry.content || "");
   const text = $("p, pre, h1, h2, h3, h4, h5, h6, div, span, code");
   let lines: string[] = [];
   text.each((_, el) => {
     if ($(el).text().trim() === "") return;
     lines.push($(el).text());
+  });
+
+  //optimistic update
+
+  const mutation = useMutation({
+    mutationFn: () => {
+      console.log("post");
+      return addFavourite(entry.id, !entry.favourite);
+    },
+
+    onMutate: async () => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ["entries", entry.bookId] });
+      // Snapshot the previous value
+      const previousEntries = queryClient.getQueryData([
+        "entries",
+        entry.bookId,
+      ]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(["entries", entry.bookId], (old: Entry[]) => {
+        return old.map((e) =>
+          e.id === entry.id ? { ...e, favourite: !entry.favourite } : e,
+        );
+      });
+      // Return a context object with the snapshotted value
+      return { previousEntries };
+    },
+    onError: (context: any) => {
+      queryClient.setQueryData(
+        ["entries", entry.bookId],
+        context.previousEntries,
+      );
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["entries", entry.bookId],
+      });
+    },
   });
 
   return (
@@ -31,7 +73,7 @@ const SidebarEntry = ({ entry, className }: SidebarEntryProps) => {
         <Star
           onClick={(e) => {
             e.stopPropagation();
-            console.log("clicked");
+            mutation.mutate();
           }}
           size={16}
           className={cn(

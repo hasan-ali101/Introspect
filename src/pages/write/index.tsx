@@ -232,7 +232,7 @@ export default function Write() {
                                 onClick={() => {
                                   setIsEditing(true);
                                 }}
-                                className="absolute right-3 top-3 z-20 rounded-md border bg-light-secondary p-1 opacity-50 transition-all hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-white/30 md:right-4 md:top-4 md:h-8 md:w-8"
+                                className="absolute right-6 top-3 z-20 rounded-md border bg-light-secondary p-1 opacity-50 transition-all hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-white/30 md:right-4 md:top-4 md:h-8 md:w-8"
                               />
                             )}
                             <Link

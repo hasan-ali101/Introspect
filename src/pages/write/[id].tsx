@@ -39,7 +39,6 @@ export default function Page() {
   const { data: entries } = useQuery({
     queryKey: ["entries", bookId],
     queryFn: () => getEntries(bookId),
-    staleTime: Infinity,
   });
 
   const [sidebarOpen, setSidebarOpen] = useState(true);

@@ -32,7 +32,6 @@ export default async function handler(
         favourite,
         index,
       });
-
       return res.status(201).json(data); // 201 for created resource
     } catch (error) {
       console.error("Database insert error:", error);
