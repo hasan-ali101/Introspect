@@ -19,13 +19,14 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { IBook } from "@/types/book";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import {
   dehydrate,
   QueryClient,
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
+import { deleteBookRequest } from "@/utils/queries/deleteBook";
 import getBooks, { useBooksQuery } from "@/utils/queries/getBooks";
 import { useAuth } from "@clerk/nextjs";
 import addNewBook from "@/utils/queries/addNewBook";
@@ -53,7 +54,9 @@ export default function Write() {
 
   const [books, setBooks] = useState<IBook[]>(data || []);
   const [isEditing, setIsEditing] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [deletingBook, setDeletingBook] = useState(false);
+  const [bookId, setBookId] = useState<string | undefined>(undefined);
   const [carouselApi, setCarouselApi] = useState<CarouselApi | undefined>(
     undefined,
   );
@@ -71,12 +74,18 @@ export default function Write() {
       await queryClient.invalidateQueries({ queryKey: ["books"] });
     },
   });
+  const deleteBookMutation = useMutation({
+    mutationFn: (bookId: string) => deleteBookRequest(bookId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["books"] });
+    },
+  });
 
   const editorCloseHandler = (book: IBook) => {
     const originalBook = data?.find((b) => b.id === book.id);
 
     if (JSON.stringify(originalBook) !== JSON.stringify(book)) {
-      setDialogOpen(true);
+      setUnsavedChanges(true);
     } else {
       setIsEditing(false);
     }
@@ -155,13 +164,20 @@ export default function Write() {
 
   const discardChanges = () => {
     setBooks(data!);
-    setDialogOpen(false);
+    setUnsavedChanges(false);
     setIsEditing(false);
+  };
+
+  const deleteBook = () => {
+    console.log("Deleting book with id:", bookId);
+    deleteBookMutation.mutate(bookId!);
+    setDeletingBook(false);
+    setBooks((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
   };
 
   const UnsavedChangesDialog = () => {
     return (
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={unsavedChanges} onOpenChange={setUnsavedChanges}>
         <DialogContent
           className={cn(
             montserrat.className,
@@ -171,7 +187,7 @@ export default function Write() {
           <DialogHeader>
             <DialogTitle>Are you sure?</DialogTitle>
           </DialogHeader>
-          <DialogDescription className="text-slate-800 dark:text-slate-300">
+          <DialogDescription className="text-slate-400 dark:text-slate-300">
             You have unsaved changes. Are you sure you want to discard them?
           </DialogDescription>
           <DialogFooter className="mt-4 flex justify-end gap-2">
@@ -179,9 +195,40 @@ export default function Write() {
             <Button
               variant="secondary"
               className="border bg-white text-black dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus-visible:ring-gray-700"
-              onClick={() => setDialogOpen(false)}
+              onClick={() => setUnsavedChanges(false)}
             >
               Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+  const DeleteBookDialog = () => {
+    return (
+      <Dialog open={deletingBook} onOpenChange={setDeletingBook}>
+        <DialogContent
+          className={cn(
+            montserrat.className,
+            "mx-auto max-w-md rounded-lg border bg-gradient-to-t from-white to-light-primary p-6 opacity-60 backdrop-blur-2xl dark:border-white dark:from-dark-secondary dark:to-dark-primary dark:opacity-80",
+          )}
+        >
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-slate-400 dark:text-slate-300">
+            This will delete your book and all it's entries. Are you sure you
+            wish to proceed?
+          </DialogDescription>
+          <DialogFooter className="mt-4 flex justify-end gap-2">
+            <Button onClick={() => setDeletingBook(false)}>Cancel</Button>
+            <Button
+              variant="secondary"
+              className="border bg-white text-black dark:bg-dark-primary dark:text-gray-200 dark:hover:bg-dark-primary/70 dark:focus-visible:ring-gray-700"
+              onClick={deleteBook}
+            >
+              Delete Book
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -196,6 +243,7 @@ export default function Write() {
       ) : (
         <div>
           <UnsavedChangesDialog />
+          <DeleteBookDialog />
           <div className="-mt-6 flex w-full flex-col gap-1 py-4 text-center">
             <h1 className="text-xl font-semibold">Your Library</h1>
             <p className=" dark:text-indigo-200">
@@ -228,12 +276,21 @@ export default function Write() {
                             )}
                           >
                             {!isEditing && (
-                              <Pencil
-                                onClick={() => {
-                                  setIsEditing(true);
-                                }}
-                                className="absolute right-6 top-3 z-20 rounded-md border bg-light-secondary p-1 opacity-50 transition-all hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-white/30 md:right-4 md:top-4 md:h-8 md:w-8"
-                              />
+                              <div className="absolute right-6 top-5 z-20 flex flex-col items-center justify-center gap-3 md:right-3">
+                                <Pencil
+                                  onClick={() => {
+                                    setIsEditing(true);
+                                  }}
+                                  className="rounded-md border bg-light-secondary p-1 opacity-50 transition-all hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-white/30 md:right-4 md:top-4 md:h-8 md:w-8"
+                                />
+                                <Trash
+                                  onClick={() => {
+                                    setDeletingBook(true);
+                                    setBookId(book.id);
+                                  }}
+                                  className="rounded-md border bg-light-secondary p-1 opacity-50 transition-all hover:bg-white/30 dark:bg-dark-tertiary dark:hover:bg-white/30 md:right-4 md:top-4 md:h-8 md:w-8"
+                                />
+                              </div>
                             )}
                             <Link
                               onClick={(e) => {
