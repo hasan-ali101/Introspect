@@ -35,7 +35,13 @@ export default async function handler(
     }
   } else if (req.method === "DELETE") {
     const { id } = req.query;
-    const data = await db.delete(books).where(eq(books.id, id as string));
+    try {
+      const data = await db.delete(books).where(eq(books.id, id as string));
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error("error deleting book");
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
   } else {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
